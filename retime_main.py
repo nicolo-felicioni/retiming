@@ -3,7 +3,7 @@ import numpy as np
 import networkx as nx
 
 
-# initialization global vars
+# declaration global vars
 g = None
 W, D = None, None
 
@@ -51,7 +51,7 @@ def WD() -> (np.array, np.array):
 # 1. r(u) - r(v) <= w(e), for all e in E s.t. (u)-e->(v)
 # 2. r(u) - r(v) <= W(u,v) - 1, for all u,v in V s.t. D(u,v) > c
 
-def test_feasibility_BF(c) -> (bool, dict):
+def test_feasibility_bf(c) -> (bool, dict):
 
     is_feasible = True
     r = None
@@ -92,48 +92,7 @@ def test_feasibility_BF(c) -> (bool, dict):
     return is_feasible, r
 
 
-def test_feasibility_BF_new(c) -> (bool, dict):
-
-    is_feasible = True
-    r = None
-
-    # 1.
-    # reverse returns a copy of a graph with edges reversed
-    constraint_graph = g.reverse()
-
-    # 2.
-    # find all u, v in V s.t. D(u,v) > c
-    pairs_reversed_arr = np.argwhere(D > c)
-    # for each u, v add an edge e to the graph s.t. (v)-e->(u)
-    # with weight w(e) = W(u,v) - 1
-    for u_v in pairs_reversed_arr:
-        u = u_v[0]
-        v = u_v[1]
-        if (v, u) not in constraint_graph.edges:
-            constraint_graph.add_edge(v, u)
-        constraint_graph.edges[v, u]["weight"] = W[u, v] - 1
-
-    # add a 'dummy' node linked to every other node
-    # weights of the edges = 0
-    new_node = max(constraint_graph.nodes) + 1
-    for node in list(constraint_graph.nodes):
-        constraint_graph.add_edge(new_node, node)
-        constraint_graph.edges[new_node, node]["weight"] = 0
-
-    # try to solve the LP problem
-    # if not solvable, throws NetworkXUnbounded exception
-    try:
-        # is solvable
-        r, _ = nx.algorithms.single_source_bellman_ford(constraint_graph, new_node)
-        is_feasible = True
-    except nx.exception.NetworkXUnbounded:
-        # not solvable
-        is_feasible = False
-
-    return is_feasible, r
-
-
-def binary_search_minimum(d_elems_sorted: np.array):
+def binary_search_minimum_bf(d_elems_sorted: np.array):
 
     minimum = np.inf
     saved_r = None
@@ -147,7 +106,7 @@ def binary_search_minimum(d_elems_sorted: np.array):
         mid = (high + low) // 2
 
         # Check if x is present at mid
-        is_feasible, r = test_feasibility_BF(d_elems_sorted[mid])
+        is_feasible, r = test_feasibility_bf(d_elems_sorted[mid])
         if is_feasible:
             # if d_elems_sorted[mid] < minimum:
             #     minimum = d_elems_sorted[mid]
@@ -169,7 +128,7 @@ def opt1():
     # the unique function also sorts the elements
     d_elems_sorted = np.unique(D)
 
-    return binary_search_minimum(d_elems_sorted)
+    return binary_search_minimum_bf(d_elems_sorted)
 
 
 def cp(graph):
