@@ -1,15 +1,5 @@
-from Graph import *
-
-
-# checks if the graph is legal after retiming,
-# i.e. if all the w(e)>=0
-def check_legal_retime(graph: nx.DiGraph) -> bool:
-    for edge in graph.edges:
-        if graph.edges[edge]["weight"] < 0:
-            return False
-
-    return True
-
+from GraphWrapper import *
+import time
 
 if __name__ == '__main__':
 
@@ -27,9 +17,19 @@ if __name__ == '__main__':
     elist = [(0, 1, 1), (1, 7, 0), (1, 2, 1), (2, 6, 0), (2, 3, 1),
              (3, 4, 1), (3, 5, 0), (4, 5, 0), (5, 6, 0), (6, 7, 0), (7, 0, 0)]
 
-    g = Graph(d, elist)
+    t_init = time.time()
+
+    wrapper = GraphWrapper(create_graph_from_d_elist(d, elist))
+    wrapper.init_WD()
+    print(f"t init:{time.time()-t_init}")
     # init_global_vars(d=d, elist=elist)
 
-    print(g.opt1())
-    print(g.opt2())
+    t0 = time.time()
+    print(wrapper.opt1())
+    t1 = time.time()
+    print(wrapper.opt2())
+    t2 = time.time()
+
+    print(f"opt1:{t1-t0}")
+    print(f"opt2:{t2-t1}")
 

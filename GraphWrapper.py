@@ -1,49 +1,50 @@
+import time
+
 import numpy as np
 import networkx as nx
+from utils import *
+
+class CustomWeight:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    # adding two objects
+    def __add__(self, other_weight):
+        if isinstance(other_weight, int):
+            print(f"other weight: {other_weight}")
+            return self
+        else:
+            return CustomWeight(self.x + other_weight.x,
+                                self.y + other_weight.y)
+
+    def __eq__(self, other):
+        # Note: generally, floats should not be compared directly
+        # due to floating-point precision
+        return (self.x == other.x) and (self.y == other.y)
+
+    def __ne__(self, other):
+        return (self.x != other.x) or (self.y != other.y)
+
+    def __lt__(self, other):
+        if self.x == other.x:
+            return self.y < other.y
+        return self.x < other.x
+
+    def __gt__(self, other):
+        return not self.__lt__(other)
 
 
-def cp(graph) -> dict:
-    # Let G0 be the subgraph of G that contains those edges with w(e)=0
-    elist_zero = []
-    for edge in graph.edges:
-        if graph.edges[edge]["weight"] == 0:
-            elist_zero.append(edge)
 
-    g_zero = nx.DiGraph()
-    g_zero.add_edges_from(elist_zero)
+class GraphWrapper:
 
-    # By W2, G0 is acyclic. Perform topol. sort s.t. if there is
-    # (u)-e->(v) => u < v
-    # go through the vertices in that topol. sort order and compute delta_v:
-    # a. if there is no iincoming edge to v, delta_v = d(v)
-    # b. otherwise,
-    # delta_v = d(v) + max_{u in V s.t. (u)-e->(v) incoming and w(e)=0}(delta_u)
-    delta = {}
-    for v in nx.topological_sort(g_zero):
-        max_delta_u = 0
-
-        for (u, _) in g_zero.in_edges(v):
-            if delta[u] > max_delta_u:
-                max_delta_u = delta[u]
-
-        delta[v] = graph.nodes[v]["delay"] + max_delta_u
-
-    # the maximum delta_v for v in V is the clock period
-    return delta
+    def __init__(self, g: nx.DiGraph):
+        self.g = g
+        self.W, self.D = None, None
 
 
-class Graph:
-
-    def __init__(self, d, elist):
-        self.g = nx.DiGraph()
-
-        self.g.add_weighted_edges_from(elist)
-
-        # set the node delays
-        nx.set_node_attributes(self.g, d, "delay")
-
+    def init_WD(self):
         self.W, self.D = self.WD()
-
 
     def WD(self) -> (np.array, np.array):
         # makes a copy of the original graph
@@ -155,11 +156,17 @@ class Graph:
         return minimum, saved_r
 
     def opt1(self):
-        # 1. compute W, D with the WD algorithm -> done
+        # 1. compute W, D with the WD algorithm
+        if self.W is None or self.D is None:
+            print("opt1: initializing W,D...")
+            self.init_WD()
 
         # 2. sort the elements in the range of D
         # the unique function also sorts the elements
+        t_start_sort = time.time()
+        print("opt1: sorting D...")
         d_elems_sorted = np.unique(self.D)
+        print(f"sorted D in {time.time()-t_start_sort}")
 
         # 3. binary search in d the minimum feasible clock period
         # check with BF
@@ -170,7 +177,7 @@ class Graph:
     # where CP = max_v{delta(v)}
 
     # retime the global graph g following function r
-    def retime(self, r: dict):
+    def get_retimed_graph(self, r: dict):
         g_r = self.g.copy()
 
         # for each (u)-e->(v):
@@ -190,18 +197,18 @@ class Graph:
         # repeat |V|-1 times:
         for _ in range(len(self.g.nodes) - 1):
             # retime the graph g following function r
-            g_r = self.retime(r)
+            g_r = self.get_retimed_graph(r)
             # calculate deltas for each v through CP algorithm
-            delta = cp(g_r)
+            delta = cp_delta(g_r)
 
             for v in delta.keys():
                 if delta[v] > c:
                     r[v] = r.get(v, 0) + 1
 
-        g_r = self.retime(r)
-        delta = cp(g_r)
+        g_r = self.get_retimed_graph(r)
+        delta, cp = cp_delta_clock(g_r)
 
-        is_feasible = ((max(delta.values())) <= c)
+        is_feasible = (cp <= c)
 
         return is_feasible, r
 
@@ -233,13 +240,41 @@ class Graph:
 
     # returns the clock period, retiming
     def opt2(self) -> (int, dict):
-        # 1. compute W, D with the WD algorithm -> done
+        # 1. compute W, D with the WD algorithm
+        if self.W is None or self.D is None:
+            print("opt2: initializing W,D...")
+            self.init_WD()
 
         # 2. sort the elements in the range of D
         # the unique function also sorts the elements
+        t_start_sort = time.time()
+        print("opt2: sorting D...")
         d_elems_sorted = np.unique(self.D)
+        print(f"sorted D in {time.time() - t_start_sort}")
 
         # 3. binary search in d the minimum feasible clock period
         # check with FEAS
         return self.binary_search_minimum_feas(d_elems_sorted)
 
+    # applies the retiming r on the graph if it's legal
+    def set_retimed_graph(self, r: dict):
+        g_r = self.get_retimed_graph(r)
+        if not check_legal_retimed_graph(g_r):
+            raise ValueError("The retiming is not legal.")
+        self.g = g_r
+
+    # opt2 but without the operations of init W, D and d_elems_sorted
+    # returns the clock period, retiming
+    def opt1_initialized(self, d_elems_sorted):
+
+        # 3. binary search in d the minimum feasible clock period
+        # check with BF
+        return self.binary_search_minimum_bf(d_elems_sorted)
+
+    # opt2 but without the operations of init W, D and d_elems_sorted
+    # returns the clock period, retiming
+    def opt2_initialized(self, d_elems_sorted) -> (int, dict):
+
+        # 3. binary search in d the minimum feasible clock period
+        # check with FEAS
+        return self.binary_search_minimum_feas(d_elems_sorted)
