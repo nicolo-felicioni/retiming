@@ -40,6 +40,11 @@ def cp_delta(graph) -> dict:
 
         delta[v] = graph.nodes[v]["delay"] + max_delta_u
 
+    # fill delta dict with the delays of the nodes not present in G0
+    for u in graph.nodes:
+        if u not in g_zero.nodes:
+            delta[u] = graph.nodes[u]["delay"]
+
     # returns the delta dictionary
     return delta
 

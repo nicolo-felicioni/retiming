@@ -4,6 +4,7 @@ import numpy as np
 import networkx as nx
 from utils import *
 
+
 class CustomWeight:
     def __init__(self, x, y):
         self.x = x
@@ -18,21 +19,21 @@ class CustomWeight:
             return CustomWeight(self.x + other_weight.x,
                                 self.y + other_weight.y)
 
-    def __eq__(self, other):
-        # Note: generally, floats should not be compared directly
-        # due to floating-point precision
-        return (self.x == other.x) and (self.y == other.y)
-
-    def __ne__(self, other):
-        return (self.x != other.x) or (self.y != other.y)
-
+    # def __eq__(self, other):
+    #     # Note: generally, floats should not be compared directly
+    #     # due to floating-point precision
+    #     return (self.x == other.x) and (self.y == other.y)
+    #
+    # def __ne__(self, other):
+    #     return (self.x != other.x) or (self.y != other.y)
+    #
     def __lt__(self, other):
         if self.x == other.x:
             return self.y < other.y
         return self.x < other.x
-
-    def __gt__(self, other):
-        return not self.__lt__(other)
+    #
+    # def __gt__(self, other):
+    #     return not self.__lt__(other)
 
 
 
@@ -64,13 +65,55 @@ class GraphWrapper:
             d_u = self.g.nodes[e[0]]["delay"]
 
             # weight in the new graph is (w(e), -d(u))
+            new_g.edges()[e]['weight'] = CustomWeight(w_e, -d_u)
+
+        # 2. compute the all-pairs shortest paths
+        # add of the weights: componentwise addition
+        # comparison of the weights: lexicographic order
+
+        path_len = dict(nx.floyd_warshall(new_g))
+        print(path_len)
+
+        # 3. For each u,v vertices, their shortest path weight is (x,y)
+        # set W(u,v) = x, D(u,v) = d(v) - y
+
+        for u in new_g.nodes:
+            for v in new_g.nodes:
+                # u = int(u)
+                # v = int(v)
+                # print(f"u : {u}")
+                # print(f"v : {v}")
+                cw = path_len[u][v]
+                W[int(u), int(v)] = cw.x
+                D[int(u), int(v)] = new_g.nodes[v]["delay"] - cw.y
+
+        return W, D
+
+    def old_WD(self) -> (np.array, np.array):
+        # makes a copy of the original graph
+        # could it be expensive?
+        new_g = self.g.copy()
+        n_vertices = new_g.number_of_nodes()
+        W = np.empty((n_vertices, n_vertices), dtype=np.int)
+        D = np.empty((n_vertices, n_vertices))
+
+        # 1. Weight each edge u-e->_ in E with the ordered
+        # pair (w(e), -d(u))
+
+        for e in self.g.edges:
+            # weight of edge e
+            w_e = self.g.edges[e]["weight"]
+            # delay of node u (i.e. e[0] since e is a tuple)
+            d_u = self.g.nodes[e[0]]["delay"]
+
+            # weight in the new graph is (w(e), -d(u))
             new_g.edges()[e]['weight'] = (w_e, -d_u)
 
         # 2. compute the all-pairs shortest paths
         # add of the weights: componentwise addition
         # comparison of the weights: lexicographic order
 
-        path_len = dict(nx.all_pairs_dijkstra_path_length(new_g))
+        path_len = dict(nx.all(new_g))
 
         # 3. For each u,v vertices, their shortest path weight is (x,y)
         # set W(u,v) = x, D(u,v) = d(v) - y
@@ -141,7 +184,9 @@ class GraphWrapper:
             mid = (high + low) // 2
 
             # Check if x is present at mid
+            print(f"testing {d_elems_sorted[mid]}")
             is_feasible, r = self.test_feasibility_bf(d_elems_sorted[mid])
+            print(f"is {d_elems_sorted[mid]} feasible? {is_feasible}")
             if is_feasible:
                 # if d_elems_sorted[mid] < minimum:
                 #     minimum = d_elems_sorted[mid]
@@ -150,6 +195,7 @@ class GraphWrapper:
                 high = mid - 1
             else:
                 low = mid + 1
+
 
         # returns the clock period, retiming
         del saved_r["dummy"]
@@ -225,7 +271,9 @@ class GraphWrapper:
             mid = (high + low) // 2
 
             # Check if x is present at mid
+            print(f"testing {d_elems_sorted[mid]}")
             is_feasible, r = self.feas(d_elems_sorted[mid])
+            print(f"is {d_elems_sorted[mid]} feasible? {is_feasible}")
             if is_feasible:
                 # if d_elems_sorted[mid] < minimum:
                 #     minimum = d_elems_sorted[mid]
