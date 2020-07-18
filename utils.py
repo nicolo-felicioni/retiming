@@ -1,5 +1,6 @@
 import networkx as nx
-
+from random import randint
+import numpy as np
 
 # checks if the graph is legal after retiming,
 # i.e. if all the w(e)>=0
@@ -65,3 +66,128 @@ def create_graph_from_d_elist(d, elist):
     nx.set_node_attributes(g, d, "delay")
 
     return g
+
+
+# retime the global graph g following function r
+def get_retimed_graph(graph, r: dict):
+    g_r = graph.copy()
+
+    # for each (u)-e->(v):
+    # wr(e) = w(e) + r(v) - r(u)
+    for (u, v) in graph.edges:
+        g_r.edges[u, v]["weight"] = graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+
+    return g_r
+
+
+# function that merges a list of retimings (dictionaries)
+def merge_r_list(r_list):
+    r_final = {}
+    key_list = []
+    for r in r_list:
+        key_list += r.keys()
+
+    key_set = set(key_list)
+    for k in key_set:
+        v = 0
+        for r in r_list:
+            v = v + r.get(k, 0)
+
+        r_final[k] = v
+
+    return r_final
+
+
+def random_retime(graph):
+    # calculate a random legal retiming
+    r = {}
+    # for each node
+    for node in graph.nodes:
+        min_in_w_r = np.inf
+        min_out_w_r = np.inf
+        # for each incoming edge
+        for e in graph.in_edges(node):
+            tail_node = e[0]
+            # calculate the temporary w of the retimed edge
+            # for the retiming of the tail node: if it is not set, take 0
+            w_r = graph.edges[e]["weight"] - r.get(tail_node, 0)
+            assert w_r >= 0, "the retiming is not legal."
+
+            # take note of what is the minimum retimed incoming weight
+            if w_r < min_in_w_r:
+                min_in_w_r = w_r
+
+        # for each outcoming edge
+        for e in graph.out_edges(node):
+            head_node = e[1]
+            # calculate the temporary w of the retimed edge
+            # for the retiming of the tail node: if it is not set, take 0
+            w_r = graph.edges[e]["weight"] + r.get(head_node, 0)
+            assert w_r >= 0, "the retiming is not legal."
+
+            # take note of what is the minimum retimed incoming weight
+            if w_r < min_out_w_r:
+                min_out_w_r = w_r
+
+        # now we have lowerbound and upperbound for the random choice
+        r[int(node)] = randint(-min_in_w_r, min_out_w_r)
+
+    return r
+
+
+def read_graph_dot(path):
+    g = nx.DiGraph(nx.nx_pydot.read_dot(path))
+
+    # convert node labels to int
+    g = nx.relabel_nodes(g, lambda x: int(x) if x != 'vh' else x)
+
+    if 'vh' in g.nodes:
+        list_nodes = list(g.nodes)
+        list_nodes.remove('vh')
+        max_id = max(list_nodes)
+        g = nx.relabel_nodes(g, lambda x: max_id+1 if x == 'vh' else x)
+
+    # convert node delays to float
+    for node in g.nodes:
+        g.nodes[node]["delay"] = float(g.nodes[node]["d"])
+
+    # convert edge w to int
+    for e in g.edges:
+        g.edges[e]["weight"] = int(g.edges[e]["w"])
+
+    return g
+
+
+def read_graph_dot_misc(path):
+    g = nx.DiGraph(nx.nx_pydot.read_dot(path))
+
+    # convert node labels to int
+    g = nx.relabel_nodes(g, lambda x: int(x))
+
+    # convert node delays to float
+    for node in g.nodes:
+        g.nodes[node]["delay"] = float(g.nodes[node]["delay"])
+
+    # convert edge w to int
+    for e in g.edges:
+        g.edges[e]["weight"] = int(g.edges[e]["weight"])
+
+    return g
+
+
+def get_stats(wrapper, verbose=True):
+    optimal_cp = max([wrapper.g.nodes[node]['delay'] for node in wrapper.g.nodes])
+    n_unique_D = len(np.unique(wrapper.D))
+    n_nodes = len(wrapper.g.nodes)
+    n_edges = len(wrapper.g.edges)
+    n_edges_zero = len([e for e in wrapper.g.edges
+                        if wrapper.g.edges[e]["weight"] == 0])
+
+    if verbose:
+        print(f"Optimal CP: {optimal_cp}")
+        print(f'unique val of D: {n_unique_D}')
+        print(f'num of nodes: {n_nodes}')
+        print(f'num of edges: {n_edges}')
+        print(f'num of edges 0: {n_edges_zero}')
+
+    return optimal_cp, n_unique_D, n_nodes, n_edges, n_edges_zero
