@@ -226,13 +226,15 @@ class GraphWrapper:
 
     # retime the global graph g following function r
     def get_retimed_graph(self, r: dict):
-        g_r = self.g.copy()
-
+        #g_r = self.g.copy()
+        elist = []
         # for each (u)-e->(v):
         # wr(e) = w(e) + r(v) - r(u)
         for (u, v) in self.g.edges:
-            g_r.edges[u, v]["weight"] = self.g.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+            elist.append((u, v, self.g.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)))
 
+        g_r = nx.DiGraph()
+        g_r.add_weighted_edges_from(elist)
         return g_r
 
     # check if c is a feasible clock period
@@ -348,7 +350,7 @@ class GraphWrapper:
         for _ in range(len(self.g.nodes) - 1):
             r = {}
             # calculate deltas for each v through CP algorithm
-            delta = cp_delta(g_r)
+            delta = self.cp_delta(g_r)
 
             for v in delta.keys():
                 if delta[v] > c:
@@ -360,7 +362,7 @@ class GraphWrapper:
             r_list.append(r)
 
         r_final = merge_r_list(r_list)
-        delta, cp = cp_delta_clock(g_r)
+        delta, cp = self.cp_delta_clock(g_r)
 
         is_feasible = (cp <= c)
 
@@ -479,3 +481,52 @@ class GraphWrapper:
 
         # returns the clock period, retiming
         return minimum, saved_r
+
+
+    # auxiliary function for CP algorithm.
+    # it returns only the delta function for each vertex (in the form of a dictionary)
+
+    def cp_delta(self, graph) -> dict:
+        # Let G0 be the subgraph of G that contains those edges with w(e)=0
+        # elist_zero = []
+
+        #for edge in graph.edges:
+        #    if graph.edges[edge]["weight"] == 0:
+        #        elist_zero.append(edge)
+
+        # Let G0 be the subgraph of G that contains those edges with w(e)=0
+        g_zero = nx.DiGraph()
+        g_zero.add_edges_from([edge for edge in graph.edges if graph.edges[edge]["weight"] == 0])
+
+        # By W2, G0 is acyclic. Perform topol. sort s.t. if there is
+        # (u)-e->(v) => u < v
+        # go through the vertices in that topol. sort order and compute delta_v:
+        # a. if there is no iincoming edge to v, delta_v = d(v)
+        # b. otherwise,
+        # delta_v = d(v) + max_{u in V s.t. (u)-e->(v) incoming and w(e)=0}(delta_u)
+        delta = {}
+        for v in nx.topological_sort(g_zero):
+            max_delta_u = 0
+
+            # for every incoming edge
+            for (u, _) in g_zero.in_edges(v):
+                if delta[u] > max_delta_u:
+                    max_delta_u = delta[u]
+
+            delta[v] = self.g.nodes[v]["delay"] + max_delta_u
+
+        # fill delta dict with the delays of the nodes not present in G0
+        for u in graph.nodes:
+            if u not in g_zero.nodes:
+                delta[u] = self.g.nodes[u]["delay"]
+
+        # returns the delta dictionary
+        return delta
+
+
+    def cp_delta_clock(self, graph) -> (dict, int):
+        delta = self.cp_delta(graph=graph)
+
+        # if delta NOT empty, the maximum delta_v for v in V is the clock period
+        # otherwise, it is the maximum delay
+        return delta, max(delta.values()) if delta else max([graph.nodes[node]["delay"] for node in graph.nodes])

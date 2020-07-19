@@ -9,6 +9,7 @@ import cProfile
 import io
 import pstats
 
+
 def draw():
 
     g = nx.DiGraph(nx.nx_pydot.read_dot("graph_files/bug5n9e"))
@@ -36,7 +37,6 @@ def draw():
 
 
 def main():
-
 
     g = nx.binomial_graph(n=100, p=0.05, seed=42, directed=True)
 
@@ -212,7 +212,7 @@ def test_sorted(path, algo_num):
         t1 = time.time()
     else:
         t0 = time.time()
-        cp1, _ = wrapper.opt2_initialized(d_elems_sorted)
+        cp1, _ = wrapper.opt2_optimized_initialized(d_elems_sorted)
         t1 = time.time()
 
     t_opt = t1 - t0
