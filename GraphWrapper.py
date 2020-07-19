@@ -73,7 +73,6 @@ class GraphWrapper:
         # comparison of the weights: lexicographic order
 
         path_len = dict(nx.floyd_warshall(new_g))
-        print(path_len)
 
         # 3. For each u,v vertices, their shortest path weight is (x,y)
         # set W(u,v) = x, D(u,v) = d(v) - y
@@ -354,7 +353,8 @@ class GraphWrapper:
             for v in delta.keys():
                 if delta[v] > c:
                     r[v] = r.get(v, 0) + 1
-
+            # TODO DEBUG
+            # print(len([e for e in r.values() if e != 0]))
             # retime the graph g following function r
             g_r = utils.get_retimed_graph(g_r, r)
             r_list.append(r)
@@ -421,3 +421,61 @@ class GraphWrapper:
         # 3. binary search in d the minimum feasible clock period
         # check with FEAS
         return self.binary_search_minimum_feas_optimized(d_elems_sorted)
+
+    def feas_optimized_numpy(self, c) -> (bool, dict):
+        # for each vertex v in V, set r(v)=0
+        r_list = []
+        g_r = self.g.copy()
+        # repeat |V|-1 times:
+        for _ in range(len(self.g.nodes) - 1):
+            r = {}
+            # calculate deltas for each v through CP algorithm
+            delta = cp_delta_np(g_r)
+
+            for i, val in enumerate(delta):
+
+                if val > c:
+                    r[i] = r.get(i, 0) + 1
+
+            # retime the graph g following function r
+            g_r = utils.get_retimed_graph(g_r, r)
+            r_list.append(r)
+
+
+
+        r_final = merge_r_list(r_list)
+        delta, cp = cp_delta_clock(g_r)
+
+        is_feasible = (cp <= c)
+
+        return is_feasible, r_final
+
+    def binary_search_minimum_feas_optimized_np(self, d_elems_sorted):
+        minimum = np.inf
+        saved_r = None
+
+        low = 0
+        high = len(d_elems_sorted) - 1
+        mid = 0
+
+        while low <= high:
+
+            mid = (high + low) // 2
+
+            # Check if x is present at mid
+            if self.verbose:
+                print(f"testing {d_elems_sorted[mid]}")
+            is_feasible, r = self.feas_optimized_numpy(d_elems_sorted[mid])
+            if self.verbose:
+                print(f"is {d_elems_sorted[mid]} feasible? {is_feasible}")
+            if is_feasible:
+                # if d_elems_sorted[mid] < minimum:
+                #     minimum = d_elems_sorted[mid]
+                minimum = d_elems_sorted[mid]
+                saved_r = r
+                high = mid - 1
+            else:
+                low = mid + 1
+
+        # returns the clock period, retiming
+        return minimum, saved_r

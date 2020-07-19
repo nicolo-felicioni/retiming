@@ -14,15 +14,18 @@ def check_legal_retimed_graph(graph: nx.DiGraph) -> bool:
 
 # auxiliary function for CP algorithm.
 # it returns only the delta function for each vertex (in the form of a dictionary)
+
 def cp_delta(graph) -> dict:
     # Let G0 be the subgraph of G that contains those edges with w(e)=0
-    elist_zero = []
-    for edge in graph.edges:
-        if graph.edges[edge]["weight"] == 0:
-            elist_zero.append(edge)
+    # elist_zero = []
 
+    #for edge in graph.edges:
+    #    if graph.edges[edge]["weight"] == 0:
+    #        elist_zero.append(edge)
+
+    # Let G0 be the subgraph of G that contains those edges with w(e)=0
     g_zero = nx.DiGraph()
-    g_zero.add_edges_from(elist_zero)
+    g_zero.add_edges_from([edge for edge in graph.edges if graph.edges[edge]["weight"] == 0])
 
     # By W2, G0 is acyclic. Perform topol. sort s.t. if there is
     # (u)-e->(v) => u < v
@@ -69,13 +72,24 @@ def create_graph_from_d_elist(d, elist):
 
 
 # retime the global graph g following function r
-def get_retimed_graph(graph, r: dict):
+def get_retimed_graph(graph: nx.DiGraph, r: dict):
     g_r = graph.copy()
 
     # for each (u)-e->(v):
+    #                HEAD   TAIL
     # wr(e) = w(e) + r(v) - r(u)
     for (u, v) in graph.edges:
         g_r.edges[u, v]["weight"] = graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+    # for n in r.values():
+    #     for e in g_r.in_edges(n):
+    #         u = e[0]
+    #         v = n
+    #         g_r.edges[u, v]["weight"] = g_r.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+    #
+    #     for e in g_r.out_edges(n):
+    #         u = n
+    #         v = e[1]
+    #         g_r.edges[u, v]["weight"] = g_r.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
 
     return g_r
 
@@ -191,3 +205,39 @@ def get_stats(wrapper, verbose=True):
         print(f'num of edges 0: {n_edges_zero}')
 
     return optimal_cp, n_unique_D, n_nodes, n_edges, n_edges_zero
+
+
+def cp_delta_np(graph) -> np.ndarray:
+    # Let G0 be the subgraph of G that contains those edges with w(e)=0
+    elist_zero = []
+    for edge in graph.edges:
+        if graph.edges[edge]["weight"] == 0:
+            elist_zero.append(edge)
+
+    g_zero = nx.DiGraph()
+    g_zero.add_edges_from(elist_zero)
+
+    # By W2, G0 is acyclic. Perform topol. sort s.t. if there is
+    # (u)-e->(v) => u < v
+    # go through the vertices in that topol. sort order and compute delta_v:
+    # a. if there is no iincoming edge to v, delta_v = d(v)
+    # b. otherwise,
+    # delta_v = d(v) + max_{u in V s.t. (u)-e->(v) incoming and w(e)=0}(delta_u)
+    delta = np.empty(shape=len(graph.nodes), dtype=np.int)
+    for v in nx.topological_sort(g_zero):
+        max_delta_u = 0
+
+        # for every incoming edge
+        for (u, _) in g_zero.in_edges(v):
+            if delta[u] > max_delta_u:
+                max_delta_u = delta[u]
+
+        delta[v] = graph.nodes[v]["delay"] + max_delta_u
+
+    # fill delta dict with the delays of the nodes not present in G0
+    for u in graph.nodes:
+        if u not in g_zero.nodes:
+            delta[u] = graph.nodes[u]["delay"]
+
+    # returns the delta dictionary (np array)
+    return delta
