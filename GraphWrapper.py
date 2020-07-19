@@ -487,6 +487,7 @@ class GraphWrapper:
     # it returns only the delta function for each vertex (in the form of a dictionary)
 
     def cp_delta(self, graph) -> dict:
+        from functools import reduce
         # Let G0 be the subgraph of G that contains those edges with w(e)=0
         # elist_zero = []
 
@@ -509,9 +510,10 @@ class GraphWrapper:
             max_delta_u = 0
 
             # for every incoming edge
-            for (u, _) in g_zero.in_edges(v):
-                if delta[u] > max_delta_u:
-                    max_delta_u = delta[u]
+            max_delta_u = reduce((lambda x, y: max(x, y)), [delta.get(u, 0) for (u, _) in g_zero.in_edges(v)], 0)
+            # for (u, _) in g_zero.in_edges(v):
+            #     if delta[u] > max_delta_u:
+            #         max_delta_u = delta[u]
 
             delta[v] = self.g.nodes[v]["delay"] + max_delta_u
 

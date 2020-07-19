@@ -71,25 +71,22 @@ def create_graph_from_d_elist(d, elist):
     return g
 
 
+# BUG
 # retime the global graph g following function r
-def get_retimed_graph_old(graph: nx.DiGraph, r: dict):
+def get_retimed_graph_nodes_strategy(graph: nx.DiGraph, r: dict):
     g_r = graph.copy()
 
     # for each (u)-e->(v):
     #                HEAD   TAIL
     # wr(e) = w(e) + r(v) - r(u)
-    for (u, v) in graph.edges:
-        g_r.edges[u, v]["weight"] = graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
-    # for n in r.values():
-    #     for e in g_r.in_edges(n):
-    #         u = e[0]
-    #         v = n
-    #         g_r.edges[u, v]["weight"] = g_r.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
-    #
-    #     for e in g_r.out_edges(n):
-    #         u = n
-    #         v = e[1]
-    #         g_r.edges[u, v]["weight"] = g_r.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+    # for (u, v) in graph.edges:
+    #    g_r.edges[u, v]["weight"] = graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)
+    for n in r.values():
+        for e in g_r.in_edges(n):
+            g_r.edges[e[0], e[1]]["weight"] = g_r.edges[e[0], e[1]]["weight"] + r.get(n, 0)
+
+        for e in g_r.out_edges(n):
+            g_r.edges[e[0], e[1]]["weight"] = g_r.edges[e[0], e[1]]["weight"] - r.get(n, 0)
 
     return g_r
 
@@ -97,14 +94,15 @@ def get_retimed_graph_old(graph: nx.DiGraph, r: dict):
 # retime the global graph g following function r
 def get_retimed_graph(graph: nx.DiGraph, r: dict):
 
-    elist = []
     # for each (u)-e->(v):
     # wr(e) = w(e) + r(v) - r(u)
-    for (u, v) in graph.edges:
-        elist.append((u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)))
+    # elist = [(u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)) for (u,v) in graph.edges]
+    # for (u, v) in graph.edges:
+    #     elist.append((u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)))
 
     g_r = nx.DiGraph()
-    g_r.add_weighted_edges_from(elist)
+    g_r.add_weighted_edges_from([(u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0))
+                                 for (u, v) in graph.edges])
     return g_r
 
 

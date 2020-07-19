@@ -208,11 +208,11 @@ def test_sorted(path, algo_num):
 
     if algo_num == 1:
         t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_feas_optimized_np(d_elems_sorted)
+        cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
         t1 = time.time()
     else:
         t0 = time.time()
-        cp1, _ = wrapper.opt2_optimized_initialized(d_elems_sorted)
+        cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
         t1 = time.time()
 
     t_opt = t1 - t0
