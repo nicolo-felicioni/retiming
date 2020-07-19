@@ -51,6 +51,39 @@ class GraphWrapper:
     def WD(self) -> (np.array, np.array):
         # makes a copy of the original graph
         # could it be expensive?
+        new_g = nx.DiGraph()
+        n_vertices = self.g.number_of_nodes()
+        W = np.empty((n_vertices, n_vertices), dtype=np.int)
+        D = np.empty((n_vertices, n_vertices))
+
+        # 1. Weight each edge u-e->_ in E with the ordered
+        # pair (w(e), -d(u))
+        new_g.add_weighted_edges_from([(u, v, CustomWeight(self.g.edges[u, v]["weight"], -self.g.nodes[u]["delay"])) for (u, v) in self.g.edges])
+
+        # 2. compute the all-pairs shortest paths
+        # add of the weights: componentwise addition
+        # comparison of the weights: lexicographic order
+        path_len = dict(nx.floyd_warshall(new_g))
+
+        # 3. For each u,v vertices, their shortest path weight is (x,y)
+        # set W(u,v) = x, D(u,v) = d(v) - y
+
+        for u in new_g.nodes:
+            for v in new_g.nodes:
+                # u = int(u)
+                # v = int(v)
+                # print(f"u : {u}")
+                # print(f"v : {v}")
+                cw = path_len[u][v]
+                W[int(u), int(v)] = cw.x
+                D[int(u), int(v)] = self.g.nodes[v]["delay"] - cw.y
+
+        return W, D
+
+
+    def WD_old(self) -> (np.array, np.array):
+        # makes a copy of the original graph
+        # could it be expensive?
         new_g = self.g.copy()
         n_vertices = new_g.number_of_nodes()
         W = np.empty((n_vertices, n_vertices), dtype=np.int)
@@ -86,43 +119,6 @@ class GraphWrapper:
                 cw = path_len[u][v]
                 W[int(u), int(v)] = cw.x
                 D[int(u), int(v)] = new_g.nodes[v]["delay"] - cw.y
-
-        return W, D
-
-    def old_WD(self) -> (np.array, np.array):
-        # makes a copy of the original graph
-        # could it be expensive?
-        new_g = self.g.copy()
-        n_vertices = new_g.number_of_nodes()
-        W = np.empty((n_vertices, n_vertices), dtype=np.int)
-        D = np.empty((n_vertices, n_vertices))
-
-        # 1. Weight each edge u-e->_ in E with the ordered
-        # pair (w(e), -d(u))
-
-        for e in self.g.edges:
-            # weight of edge e
-            w_e = self.g.edges[e]["weight"]
-            # delay of node u (i.e. e[0] since e is a tuple)
-            d_u = self.g.nodes[e[0]]["delay"]
-
-            # weight in the new graph is (w(e), -d(u))
-            new_g.edges()[e]['weight'] = (w_e, -d_u)
-
-        # 2. compute the all-pairs shortest paths
-        # add of the weights: componentwise addition
-        # comparison of the weights: lexicographic order
-
-        path_len = dict(nx.all(new_g))
-
-        # 3. For each u,v vertices, their shortest path weight is (x,y)
-        # set W(u,v) = x, D(u,v) = d(v) - y
-
-        for u in new_g.nodes:
-            for v in new_g.nodes:
-                (x, y) = path_len[u][v]
-                W[u, v] = x
-                D[u, v] = new_g.nodes[v]["delay"] - y
 
         return W, D
 
