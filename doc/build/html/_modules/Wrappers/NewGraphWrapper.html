@@ -6,29 +6,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wrappers.NewGraphWrapper &#8212; Retiming 1.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wrappers.NewGraphWrapper</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <h1>Source code for Wrappers.NewGraphWrapper</h1><div class="highlight"><pre>
@@ -39,41 +46,10 @@
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">Wrappers.GraphWrapper</span> <span class="kn">import</span> <span class="n">CustomWeight</span>
 
 
-<span class="k">class</span> <span class="nc">CustomWeight</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
-
-    <span class="c1"># adding two objects</span>
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_weight</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_weight</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;other weight: </span><span class="si">{</span><span class="n">other_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">CustomWeight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">other_weight</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">other_weight</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-
-    <span class="c1"># def __eq__(self, other):</span>
-    <span class="c1">#     # Note: generally, floats should not be compared directly</span>
-    <span class="c1">#     # due to floating-point precision</span>
-    <span class="c1">#     return (self.x == other.x) and (self.y == other.y)</span>
-    <span class="c1">#</span>
-    <span class="c1"># def __ne__(self, other):</span>
-    <span class="c1">#     return (self.x != other.x) or (self.y != other.y)</span>
-    <span class="c1">#</span>
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span>
-    <span class="c1">#</span>
-    <span class="c1"># def __gt__(self, other):</span>
-    <span class="c1">#     return not self.__lt__(other)</span>
-
-
-
-<div class="viewcode-block" id="NewGraphWrapper"><a class="viewcode-back" href="../../index.html#Wrappers.NewGraphWrapper.NewGraphWrapper">[docs]</a><span class="k">class</span> <span class="nc">NewGraphWrapper</span><span class="p">:</span>
+<div class="viewcode-block" id="NewGraphWrapper"><a class="viewcode-back" href="../../NewGraphWrapper.html#Wrappers.NewGraphWrapper.NewGraphWrapper">[docs]</a><span class="k">class</span> <span class="nc">NewGraphWrapper</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper class that wraps the nx.DiGraph graph. This class is used for OPT2.</span>
 
@@ -100,7 +76,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">WD</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="NewGraphWrapper.WD"><a class="viewcode-back" href="../../index.html#Wrappers.NewGraphWrapper.NewGraphWrapper.WD">[docs]</a>    <span class="k">def</span> <span class="nf">WD</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="NewGraphWrapper.WD"><a class="viewcode-back" href="../../NewGraphWrapper.html#Wrappers.NewGraphWrapper.NewGraphWrapper.WD">[docs]</a>    <span class="k">def</span> <span class="nf">WD</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the matrices W and D.</span>
 
@@ -136,7 +112,7 @@
         <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">D</span></div>
 
 
-<div class="viewcode-block" id="NewGraphWrapper.binary_search_minimum_feas"><a class="viewcode-back" href="../../index.html#Wrappers.NewGraphWrapper.NewGraphWrapper.binary_search_minimum_feas">[docs]</a>    <span class="k">def</span> <span class="nf">binary_search_minimum_feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+<div class="viewcode-block" id="NewGraphWrapper.binary_search_minimum_feas"><a class="viewcode-back" href="../../NewGraphWrapper.html#Wrappers.NewGraphWrapper.NewGraphWrapper.binary_search_minimum_feas">[docs]</a>    <span class="k">def</span> <span class="nf">binary_search_minimum_feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the minimum clock period feasible given a set of possible clock periods sorted.</span>
 
@@ -178,7 +154,7 @@
         <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span></div>
 
 
-<div class="viewcode-block" id="NewGraphWrapper.feas"><a class="viewcode-back" href="../../index.html#Wrappers.NewGraphWrapper.NewGraphWrapper.feas">[docs]</a>    <span class="k">def</span> <span class="nf">feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<div class="viewcode-block" id="NewGraphWrapper.feas"><a class="viewcode-back" href="../../NewGraphWrapper.html#Wrappers.NewGraphWrapper.NewGraphWrapper.feas">[docs]</a>    <span class="k">def</span> <span class="nf">feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that checks if the parameter c is feasible as clock period for the graph contained in the wrapper.</span>
 <span class="sd">        In this version, it works like this:</span>
@@ -192,7 +168,7 @@
 
 <span class="sd">            * calculate delta values for every v (see cp_delta)</span>
 
-<span class="sd">            * while calculating delta, if delta(v) &gt; c -&gt; r[v]++</span>
+<span class="sd">            * while calculating delta, if delta(v) &gt; c ---&gt; r[v]++</span>
 
 <span class="sd">            * update weight dictionary with the retiming r and update edges_zero accordingly</span>
 
@@ -263,32 +239,12 @@
         <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">Retiming</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -299,29 +255,27 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2020, Nicolò Felicioni.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wrappers.NewGraphWrapper</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
   </body>
 </html>

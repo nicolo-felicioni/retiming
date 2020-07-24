@@ -5,38 +5,7 @@ import networkx as nx
 from utils import *
 import utils
 from functools import reduce
-
-
-class CustomWeight:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    # adding two objects
-    def __add__(self, other_weight):
-        if isinstance(other_weight, int):
-            print(f"other weight: {other_weight}")
-            return self
-        else:
-            return CustomWeight(self.x + other_weight.x,
-                                self.y + other_weight.y)
-
-    # def __eq__(self, other):
-    #     # Note: generally, floats should not be compared directly
-    #     # due to floating-point precision
-    #     return (self.x == other.x) and (self.y == other.y)
-    #
-    # def __ne__(self, other):
-    #     return (self.x != other.x) or (self.y != other.y)
-    #
-    def __lt__(self, other):
-        if self.x == other.x:
-            return self.y < other.y
-        return self.x < other.x
-    #
-    # def __gt__(self, other):
-    #     return not self.__lt__(other)
-
+from Wrappers.GraphWrapper import CustomWeight
 
 
 class NewGraphWrapper:
@@ -158,7 +127,7 @@ class NewGraphWrapper:
 
             * calculate delta values for every v (see cp_delta)
 
-            * while calculating delta, if delta(v) > c -> r[v]++
+            * while calculating delta, if delta(v) > c ---> r[v]++
 
             * update weight dictionary with the retiming r and update edges_zero accordingly
 

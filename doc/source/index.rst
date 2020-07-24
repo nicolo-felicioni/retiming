@@ -10,15 +10,9 @@ Welcome to Retiming's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: Wrappers.NewGraphWrapper
-    :members:
+   NewGraphWrapper <NewGraphWrapper.rst>
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-.. automodule:: Wrappers.GraphWrapper
-    :members:
+   GraphWrapper <GraphWrapper.rst>
 
 
 Indices and tables

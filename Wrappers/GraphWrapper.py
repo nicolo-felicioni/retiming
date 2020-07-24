@@ -395,25 +395,8 @@ class GraphWrapper:
             raise ValueError("The retiming is not legal.")
         self.g = g_r
 
-    # opt2 but without the operations of init W, D and d_elems_sorted
-    # returns the clock period, retiming
-    def opt1_initialized(self, d_elems_sorted):
-
-        # 3. binary search in d the minimum feasible clock period
-        # check with BF
-        return self.binary_search_minimum_bf(d_elems_sorted)
-
-    # opt2 but without the operations of init W, D and d_elems_sorted
-    # returns the clock period, retiming
-    def opt2_initialized(self, d_elems_sorted) -> (int, dict):
-
-        # 3. binary search in d the minimum feasible clock period
-        # check with FEAS
-        return self.binary_search_minimum_feas(d_elems_sorted)
-
 
     # OPTIMIZATION FOR FEAS
-
 
     # like feas, but with an optimized loop that doesn't re-apply the whole retiming
     # it applies only the changed part
@@ -495,70 +478,6 @@ class GraphWrapper:
         # 3. binary search in d the minimum feasible clock period
         # check with FEAS
         return self.binary_search_minimum_feas_optimized(d_elems_sorted)
-
-    def opt2_optimized_initialized(self, d_elems_sorted) -> (int, dict):
-
-        # 3. binary search in d the minimum feasible clock period
-        # check with FEAS
-        return self.binary_search_minimum_feas_optimized(d_elems_sorted)
-
-    def feas_optimized_numpy(self, c) -> (bool, dict):
-        # for each vertex v in V, set r(v)=0
-        r_list = []
-        g_r = self.g.copy()
-        # repeat |V|-1 times:
-        for _ in range(len(self.g.nodes) - 1):
-            r = {}
-            # calculate deltas for each v through CP algorithm
-            delta = cp_delta_np(g_r)
-
-            for i, val in enumerate(delta):
-
-                if val > c:
-                    r[i] = r.get(i, 0) + 1
-
-            # retime the graph g following function r
-            g_r = utils.get_retimed_graph(g_r, r)
-            r_list.append(r)
-
-
-
-        r_final = merge_r_list(r_list)
-        delta, cp = cp_delta_clock(g_r)
-
-        is_feasible = (cp <= c)
-
-        return is_feasible, r_final
-
-    def binary_search_minimum_feas_optimized_np(self, d_elems_sorted):
-        minimum = np.inf
-        saved_r = None
-
-        low = 0
-        high = len(d_elems_sorted) - 1
-        mid = 0
-
-        while low <= high:
-
-            mid = (high + low) // 2
-
-            # Check if x is present at mid
-            if self.verbose:
-                print(f"testing {d_elems_sorted[mid]}")
-            is_feasible, r = self.feas_optimized_numpy(d_elems_sorted[mid])
-            if self.verbose:
-                print(f"is {d_elems_sorted[mid]} feasible? {is_feasible}")
-            if is_feasible:
-                # if d_elems_sorted[mid] < minimum:
-                #     minimum = d_elems_sorted[mid]
-                minimum = d_elems_sorted[mid]
-                saved_r = r
-                high = mid - 1
-            else:
-                low = mid + 1
-
-        # returns the clock period, retiming
-        return minimum, saved_r
 
 
     # auxiliary function for CP algorithm.

@@ -6,215 +6,50 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Retiming’s documentation! &#8212; Retiming 1.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="NewGraphWrapper" href="NewGraphWrapper.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to Retiming’s documentation!</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-retiming-s-documentation">
 <h1>Welcome to Retiming’s documentation!<a class="headerlink" href="#welcome-to-retiming-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="NewGraphWrapper.html">NewGraphWrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GraphWrapper.html">GraphWrapper</a></li>
+</ul>
 </div>
-<span class="target" id="module-Wrappers.NewGraphWrapper"></span><dl class="py class">
-<dt id="Wrappers.NewGraphWrapper.NewGraphWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">Wrappers.NewGraphWrapper.</code><code class="sig-name descname">NewGraphWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">g</span><span class="p">:</span> <span class="n">networkx.classes.digraph.DiGraph</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/NewGraphWrapper.html#NewGraphWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.NewGraphWrapper.NewGraphWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper class that wraps the nx.DiGraph graph. This class is used for OPT2.</p>
-<p>It wraps -apart from the graph- the WD matrices, component delay (both as dict and as np.arr), weight dict, nodes and edges list, num of nodes.</p>
-<dl class="py method">
-<dt id="Wrappers.NewGraphWrapper.NewGraphWrapper.WD">
-<code class="sig-name descname">WD</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;built-in function array&gt;</em>, <em class="sig-param">&lt;built-in function array&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/NewGraphWrapper.html#NewGraphWrapper.WD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.NewGraphWrapper.NewGraphWrapper.WD" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the matrices W and D.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>W, D matrices as 2D np.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.NewGraphWrapper.NewGraphWrapper.binary_search_minimum_feas">
-<code class="sig-name descname">binary_search_minimum_feas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_elems_sorted</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/NewGraphWrapper.html#NewGraphWrapper.binary_search_minimum_feas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.NewGraphWrapper.NewGraphWrapper.binary_search_minimum_feas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the minimum clock period feasible given a set of possible clock periods sorted.</p>
-<p>Since the elements are sorted, it uses a binary search.</p>
-<p>It uses FEAS to check whether a given cp is feasible or not</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d_elems_sorted</strong> – a list of possible (unique) clock periods sorted</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the minimum feasible clock period and the corresponding retiming</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.NewGraphWrapper.NewGraphWrapper.feas">
-<code class="sig-name descname">feas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/NewGraphWrapper.html#NewGraphWrapper.feas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.NewGraphWrapper.NewGraphWrapper.feas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that checks if the parameter c is feasible as clock period for the graph contained in the wrapper.
-In this version, it works like this:</p>
-<ol class="arabic">
-<li><p>it creates a matrix r_mat with shape (|V|, |V|-1) full of zeros, a list edges_zero of edges that have w(e)=0 and a copy of the weight dictionary</p></li>
-<li><p>for i from 0 to |V| - 1:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>take r = r_mat[:, i], namely the i-th column</p></li>
-<li><p>calculate delta values for every v (see cp_delta)</p></li>
-<li><p>while calculating delta, if delta(v) &gt; c -&gt; r[v]++</p></li>
-<li><p>update weight dictionary with the retiming r and update edges_zero accordingly</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>calculate cp and delta on the final retiming, looking in weight and if cp &lt;= c, then c is feasible</p></li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>c</strong> – the clock period to be tested</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>is_feasible: a boolean that says if c is a feasible clock period; r_final: the final retiming</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<div class="toctree-wrapper compound">
-</div>
-<span class="target" id="module-Wrappers.GraphWrapper"></span><dl class="py class">
-<dt id="Wrappers.GraphWrapper.CustomWeight">
-<em class="property">class </em><code class="sig-prename descclassname">Wrappers.GraphWrapper.</code><code class="sig-name descname">CustomWeight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#CustomWeight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.CustomWeight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Custom weight class, needed for calculating W and D.</p>
-<p>It has two weights (x,y) and overloads the operator add with componentwise addition, and the
-operator less than with the lexicographic order.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="Wrappers.GraphWrapper.GraphWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">Wrappers.GraphWrapper.</code><code class="sig-name descname">GraphWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">g</span><span class="p">:</span> <span class="n">networkx.classes.digraph.DiGraph</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper class that contains the nx.DiGraph graph. This class was used for OPT1 and OPT2,
-but a better version of OPT2 is contained in NewGraphWrapper.</p>
-<p>It contains -apart from the graph- the WD matrices (that need to be initialized with the appropriate method first).</p>
-<dl class="py method">
-<dt id="Wrappers.GraphWrapper.GraphWrapper.WD">
-<code class="sig-name descname">WD</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;built-in function array&gt;</em>, <em class="sig-param">&lt;built-in function array&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.WD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.WD" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates and returns W, D matrices as 2D numpy array.
-W and D are |V| x |V|.</p>
-<ol class="arabic">
-<li><p>Weight each edge u-e-&gt;_ in E with the ordered pair (w(e), -d(u))</p></li>
-<li><p>compute the all-pairs shortest paths with a custom Floyd Warshall such that add of the weights: componentwise addition, comparison of the weights: lexicographic order</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>(see CustomWeight class and floyd_warshall_predecessor_and_distance_custom in nx.algorithms.shortest_path.dense.py)</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>For each u,v vertices, their shortest path weight is (x,y). Set W(u,v) = x, D(u,v) = d(v) - y</p></li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>W, D</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf">
-<code class="sig-name descname">binary_search_minimum_bf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_elems_sorted</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.binary_search_minimum_bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the minimum clock period feasible given a set of possible clock periods sorted.</p>
-<p>Since the elements are sorted, it uses a binary search.</p>
-<p>It uses test_feasibility_bf to check whether a given cp is feasible or not</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d_elems_sorted</strong> – a list of possible (unique) clock periods sorted</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the minimum feasible clock period and the corresponding retiming</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.GraphWrapper.GraphWrapper.init_WD">
-<code class="sig-name descname">init_WD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.init_WD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.init_WD" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialization of the two matrices W, D. It calls the function WD.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.GraphWrapper.GraphWrapper.opt1">
-<code class="sig-name descname">opt1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.opt1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.opt1" title="Permalink to this definition">¶</a></dt>
-<dd><p>OPT-1 algorithm to find the best feasible clock period.</p>
-<ol class="arabic simple">
-<li><p>compute W, D with the WD algorithm</p></li>
-<li><p>sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)</p></li>
-<li><p>binary search in d the minimum feasible clock period with binary_search_minimum_bf</p></li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>see binary_search_minimum_bf</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf">
-<code class="sig-name descname">test_feasibility_bf</code><span class="sig-paren">(</span><em class="sig-param">c) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.test_feasibility_bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bellman-Ford test for feasibility
-constraints:</p>
-<ol class="arabic simple">
-<li><p>r(u) - r(v) &lt;= w(e), for all e in E s.t. (u)-e-&gt;(v)</p></li>
-<li><p>r(u) - r(v) &lt;= W(u,v) - 1, for all u,v in V s.t. D(u,v) &gt; c</p></li>
-</ol>
-<p>The algorithm works in this way:</p>
-<ol class="arabic">
-<li><p>create constraint_graph, a copy of a graph with edges reversed</p></li>
-<li><p>find all u, v in V s.t. D(u,v) &gt; c</p></li>
-<li><p>for each u, v add an edge e to the constraint_graph s.t. (v)-e-&gt;(u)</p></li>
-<li><p>add a “dummy” node linked with weight 0 to every other node</p></li>
-<li><p>try to solve the LP problem with single_source_bellman_ford from “dummy”</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>if not solvable, throws NetworkXUnbounded exception</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>c</strong> – the clock period to test</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>is_feasible: a boolean that says if c is feasible or not; r: if is_feasible, r is the retiming to get c</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -226,30 +61,28 @@ constraints:</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">Retiming</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-  </ul></li>
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Retiming’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
-</div>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="NewGraphWrapper.html"
+                        title="next chapter">NewGraphWrapper</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -260,32 +93,29 @@ constraints:</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2020, Nicolò Felicioni.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to Retiming’s documentation!</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
   </body>
 </html>
