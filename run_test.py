@@ -1,4 +1,4 @@
-from GraphWrapper import *
+from Wrappers.GraphWrapper import *
 import time
 from random import randint
 

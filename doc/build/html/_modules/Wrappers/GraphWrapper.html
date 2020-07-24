@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrappers.GraphWrapper &#8212; Retiming 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Wrappers.GraphWrapper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+<div class="viewcode-block" id="CustomWeight"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.CustomWeight">[docs]</a><span class="k">class</span> <span class="nc">CustomWeight</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom weight class, needed for calculating W and D.</span>
+
+<span class="sd">    It has two weights (x,y) and overloads the operator add with componentwise addition, and the</span>
+<span class="sd">    operator less than with the lexicographic order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="c1"># adding two objects</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_weight</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_weight</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;other weight: </span><span class="si">{</span><span class="n">other_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CustomWeight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">other_weight</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">other_weight</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># def __eq__(self, other):</span>
+    <span class="c1">#     # Note: generally, floats should not be compared directly</span>
+    <span class="c1">#     # due to floating-point precision</span>
+    <span class="c1">#     return (self.x == other.x) and (self.y == other.y)</span>
+    <span class="c1">#</span>
+    <span class="c1"># def __ne__(self, other):</span>
+    <span class="c1">#     return (self.x != other.x) or (self.y != other.y)</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span></div>
+    <span class="c1">#</span>
+    <span class="c1"># def __gt__(self, other):</span>
+    <span class="c1">#     return not self.__lt__(other)</span>
+
+
+
+<div class="viewcode-block" id="GraphWrapper"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper">[docs]</a><span class="k">class</span> <span class="nc">GraphWrapper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper class that contains the nx.DiGraph graph. This class was used for OPT1 and OPT2,</span>
+<span class="sd">    but a better version of OPT2 is contained in NewGraphWrapper.</span>
+
+<span class="sd">    It contains -apart from the graph- the WD matrices (that need to be initialized with the appropriate method first).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for the wrapper.</span>
+
+<span class="sd">        :param g: the graph nx.DiGraph to be wrapped.</span>
+<span class="sd">        :param verbose: boolean for debug purposes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s2">&quot;delay&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+
+<div class="viewcode-block" id="GraphWrapper.init_WD"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.init_WD">[docs]</a>    <span class="k">def</span> <span class="nf">init_WD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization of the two matrices W, D. It calls the function WD.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">WD</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWrapper.WD"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.WD">[docs]</a>    <span class="k">def</span> <span class="nf">WD</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and returns W, D matrices as 2D numpy array.</span>
+<span class="sd">        W and D are \|V\| x \|V\|.</span>
+
+<span class="sd">        #. Weight each edge u-e-&gt;_ in E with the ordered pair (w(e), -d(u))</span>
+
+<span class="sd">        #. compute the all-pairs shortest paths with a custom Floyd Warshall such that add of the weights: componentwise addition, comparison of the weights: lexicographic order</span>
+
+<span class="sd">            * (see CustomWeight class and floyd_warshall_predecessor_and_distance_custom in nx.algorithms.shortest_path.dense.py)</span>
+
+<span class="sd">        #. For each u,v vertices, their shortest path weight is (x,y). Set W(u,v) = x, D(u,v) = d(v) - y</span>
+
+<span class="sd">        :return: W, D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># makes a copy of the original graph</span>
+        <span class="n">new_g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">n_vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_vertices</span><span class="p">,</span> <span class="n">n_vertices</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_vertices</span><span class="p">,</span> <span class="n">n_vertices</span><span class="p">))</span>
+
+        <span class="c1"># 1. Weight each edge u-e-&gt;_ in E with the ordered</span>
+        <span class="c1"># pair (w(e), -d(u))</span>
+        <span class="n">new_g</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">([(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">CustomWeight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">],</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">[</span><span class="n">u</span><span class="p">]))</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">])</span>
+
+        <span class="c1"># 2. compute the all-pairs shortest paths</span>
+        <span class="c1"># add of the weights: componentwise addition</span>
+        <span class="c1"># comparison of the weights: lexicographic order</span>
+        <span class="n">path_len</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">floyd_warshall</span><span class="p">(</span><span class="n">new_g</span><span class="p">))</span>
+
+        <span class="c1"># 3. For each u,v vertices, their shortest path weight is (x,y)</span>
+        <span class="c1"># set W(u,v) = x, D(u,v) = d(v) - y</span>
+
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">new_g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="c1"># u = int(u)</span>
+                <span class="c1"># v = int(v)</span>
+                <span class="c1"># print(f&quot;u : {u}&quot;)</span>
+                <span class="c1"># print(f&quot;v : {v}&quot;)</span>
+                <span class="n">cw</span> <span class="o">=</span> <span class="n">path_len</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+                <span class="n">W</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">x</span>
+                <span class="n">D</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">cw</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">D</span></div>
+
+
+    <span class="k">def</span> <span class="nf">WD_old</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="c1"># makes a copy of the original graph</span>
+        <span class="c1"># could it be expensive?</span>
+        <span class="n">new_g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">n_vertices</span> <span class="o">=</span> <span class="n">new_g</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_vertices</span><span class="p">,</span> <span class="n">n_vertices</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_vertices</span><span class="p">,</span> <span class="n">n_vertices</span><span class="p">))</span>
+
+        <span class="c1"># 1. Weight each edge u-e-&gt;_ in E with the ordered</span>
+        <span class="c1"># pair (w(e), -d(u))</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="c1"># weight of edge e</span>
+            <span class="n">w_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+            <span class="c1"># delay of node u (i.e. e[0] since e is a tuple)</span>
+            <span class="n">d_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;delay&quot;</span><span class="p">]</span>
+
+            <span class="c1"># weight in the new graph is (w(e), -d(u))</span>
+            <span class="n">new_g</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CustomWeight</span><span class="p">(</span><span class="n">w_e</span><span class="p">,</span> <span class="o">-</span><span class="n">d_u</span><span class="p">)</span>
+
+        <span class="c1"># 2. compute the all-pairs shortest paths</span>
+        <span class="c1"># add of the weights: componentwise addition</span>
+        <span class="c1"># comparison of the weights: lexicographic order</span>
+
+        <span class="n">path_len</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">floyd_warshall</span><span class="p">(</span><span class="n">new_g</span><span class="p">))</span>
+
+        <span class="c1"># 3. For each u,v vertices, their shortest path weight is (x,y)</span>
+        <span class="c1"># set W(u,v) = x, D(u,v) = d(v) - y</span>
+
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">new_g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="c1"># u = int(u)</span>
+                <span class="c1"># v = int(v)</span>
+                <span class="c1"># print(f&quot;u : {u}&quot;)</span>
+                <span class="c1"># print(f&quot;v : {v}&quot;)</span>
+                <span class="n">cw</span> <span class="o">=</span> <span class="n">path_len</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
+                <span class="n">W</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">x</span>
+                <span class="n">D</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_g</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;delay&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cw</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">D</span>
+
+
+<div class="viewcode-block" id="GraphWrapper.test_feasibility_bf"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf">[docs]</a>    <span class="k">def</span> <span class="nf">test_feasibility_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bellman-Ford test for feasibility</span>
+<span class="sd">        constraints:</span>
+
+<span class="sd">        #. r(u) - r(v) &lt;= w(e), for all e in E s.t. (u)-e-&gt;(v)</span>
+
+<span class="sd">        #. r(u) - r(v) &lt;= W(u,v) - 1, for all u,v in V s.t. D(u,v) &gt; c</span>
+
+<span class="sd">        The algorithm works in this way:</span>
+
+<span class="sd">        #. create constraint_graph, a copy of a graph with edges reversed</span>
+
+<span class="sd">        #. find all u, v in V s.t. D(u,v) &gt; c</span>
+
+<span class="sd">        #. for each u, v add an edge e to the constraint_graph s.t. (v)-e-&gt;(u)</span>
+
+<span class="sd">        #. add a &quot;dummy&quot; node linked with weight 0 to every other node</span>
+
+<span class="sd">        #. try to solve the LP problem with single_source_bellman_ford from &quot;dummy&quot;</span>
+
+<span class="sd">            * if not solvable, throws NetworkXUnbounded exception</span>
+
+<span class="sd">        :param c: the clock period to test</span>
+<span class="sd">        :return: is_feasible: a boolean that says if c is feasible or not; r: if is_feasible, r is the retiming to get c</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># 1.</span>
+        <span class="c1"># reverse returns a copy of a graph with edges reversed</span>
+        <span class="n">constraint_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+        <span class="c1"># 2.</span>
+        <span class="c1"># find all u, v in V s.t. D(u,v) &gt; c</span>
+        <span class="n">pairs_reversed_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">)</span>
+        <span class="c1"># for each u, v add an edge e to the graph s.t. (v)-e-&gt;(u)</span>
+        <span class="c1"># with weight w(e) = W(u,v) - 1</span>
+        <span class="k">for</span> <span class="n">u_v</span> <span class="ow">in</span> <span class="n">pairs_reversed_arr</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constraint_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="n">constraint_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+            <span class="n">constraint_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c1"># add a &#39;dummy&#39; node linked to every other node</span>
+        <span class="c1"># weights of the edges = 0</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">constraint_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">constraint_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="n">constraint_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># try to solve the LP problem</span>
+        <span class="c1"># if not solvable, throws NetworkXUnbounded exception</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># is solvable</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">single_source_bellman_ford</span><span class="p">(</span><span class="n">constraint_graph</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">NetworkXUnbounded</span><span class="p">:</span>
+            <span class="c1"># not solvable</span>
+            <span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="GraphWrapper.binary_search_minimum_bf"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf">[docs]</a>    <span class="k">def</span> <span class="nf">binary_search_minimum_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the minimum clock period feasible given a set of possible clock periods sorted.</span>
+
+<span class="sd">        Since the elements are sorted, it uses a binary search.</span>
+
+<span class="sd">        It uses test_feasibility_bf to check whether a given cp is feasible or not</span>
+
+<span class="sd">        :param d_elems_sorted: a list of possible (unique) clock periods sorted</span>
+<span class="sd">        :return: the minimum feasible clock period and the corresponding retiming</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+
+            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Check if x is present at mid</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_feasibility_bf</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
+                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
+                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
+                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
+                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+
+        <span class="c1"># returns the clock period, retiming</span>
+        <span class="k">del</span> <span class="n">saved_r</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span></div>
+
+<div class="viewcode-block" id="GraphWrapper.opt1"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.opt1">[docs]</a>    <span class="k">def</span> <span class="nf">opt1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        OPT-1 algorithm to find the best feasible clock period.</span>
+
+<span class="sd">        #. compute W, D with the WD algorithm</span>
+
+<span class="sd">        #. sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)</span>
+
+<span class="sd">        #. binary search in d the minimum feasible clock period with binary_search_minimum_bf</span>
+
+<span class="sd">        :return: see binary_search_minimum_bf</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. compute W, D with the WD algorithm</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt1: initializing W,D...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_WD</span><span class="p">()</span>
+
+        <span class="c1"># 2. sort the elements in the range of D</span>
+        <span class="c1"># the unique function also sorts the elements</span>
+        <span class="n">t_start_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt1: sorting D...&quot;</span><span class="p">)</span>
+        <span class="n">d_elems_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sorted D in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t_start_sort</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with BF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_bf</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span></div>
+
+    <span class="c1"># find the clock period of a graph given</span>
+    <span class="c1"># returns a dictionary: V -&gt; Natural</span>
+    <span class="c1"># where CP = max_v{delta(v)}</span>
+
+    <span class="c1"># retime the global graph g following function r</span>
+    <span class="k">def</span> <span class="nf">get_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1">#g_r = self.g.copy()</span>
+        <span class="n">elist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># for each (u)-e-&gt;(v):</span>
+        <span class="c1"># wr(e) = w(e) + r(v) - r(u)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">elist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+        <span class="n">g_r</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">g_r</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">elist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g_r</span>
+
+    <span class="c1"># check if c is a feasible clock period</span>
+    <span class="c1"># returns:</span>
+    <span class="c1"># is_feasible: bool, is true if c is feasible</span>
+    <span class="c1"># r: dict, the actual retiming if c is feasible</span>
+    <span class="k">def</span> <span class="nf">feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># for each vertex v in V, set r(v)=0</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># repeat |V|-1 times:</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># retime the graph g following function r</span>
+            <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="c1"># calculate deltas for each v through CP algorithm</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">cp_delta</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">delta</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">delta</span><span class="p">,</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cp_delta_clock</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+        <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="nf">binary_search_minimum_feas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+
+            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Check if x is present at mid</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
+                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
+                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
+                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
+                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># returns the clock period, retiming</span>
+        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span>
+
+    <span class="c1"># returns the clock period, retiming</span>
+    <span class="k">def</span> <span class="nf">opt2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># 1. compute W, D with the WD algorithm</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2: initializing W,D...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_WD</span><span class="p">()</span>
+
+        <span class="c1"># 2. sort the elements in the range of D</span>
+        <span class="c1"># the unique function also sorts the elements</span>
+        <span class="n">t_start_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2: sorting D...&quot;</span><span class="p">)</span>
+        <span class="n">d_elems_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sorted D in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start_sort</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with FEAS</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+
+    <span class="c1"># applies the retiming r on the graph if it&#39;s legal</span>
+    <span class="k">def</span> <span class="nf">set_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_legal_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The retiming is not legal.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_r</span>
+
+    <span class="c1"># opt2 but without the operations of init W, D and d_elems_sorted</span>
+    <span class="c1"># returns the clock period, retiming</span>
+    <span class="k">def</span> <span class="nf">opt1_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with BF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_bf</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+
+    <span class="c1"># opt2 but without the operations of init W, D and d_elems_sorted</span>
+    <span class="c1"># returns the clock period, retiming</span>
+    <span class="k">def</span> <span class="nf">opt2_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with FEAS</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+
+
+    <span class="c1"># OPTIMIZATION FOR FEAS</span>
+
+
+    <span class="c1"># like feas, but with an optimized loop that doesn&#39;t re-apply the whole retiming</span>
+    <span class="c1"># it applies only the changed part</span>
+    <span class="c1"># returns:</span>
+    <span class="c1"># is_feasible: bool, is true if c is feasible</span>
+    <span class="c1"># r: dict, the actual retiming if c is feasible</span>
+    <span class="k">def</span> <span class="nf">feas_optimized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># for each vertex v in V, set r(v)=0</span>
+        <span class="n">r_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># repeat |V|-1 times:</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># calculate deltas for each v through CP algorithm</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp_delta</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">delta</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># TODO DEBUG</span>
+            <span class="c1"># print(len([e for e in r.values() if e != 0]))</span>
+            <span class="c1"># retime the graph g following function r</span>
+            <span class="n">g_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="n">r_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">r_final</span> <span class="o">=</span> <span class="n">merge_r_list</span><span class="p">(</span><span class="n">r_list</span><span class="p">)</span>
+        <span class="n">delta</span><span class="p">,</span> <span class="n">cp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp_delta_clock</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+        <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span>
+
+
+    <span class="k">def</span> <span class="nf">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+
+            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Check if x is present at mid</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
+                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
+                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
+                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
+                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># returns the clock period, retiming</span>
+        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span>
+
+
+    <span class="c1"># returns the clock period, retiming</span>
+    <span class="k">def</span> <span class="nf">opt2_optimized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># 1. compute W, D with the WD algorithm</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2: initializing W,D...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_WD</span><span class="p">()</span>
+
+        <span class="c1"># 2. sort the elements in the range of D</span>
+        <span class="c1"># the unique function also sorts the elements</span>
+        <span class="n">t_start_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2: sorting D...&quot;</span><span class="p">)</span>
+        <span class="n">d_elems_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sorted D in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start_sort</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with FEAS</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">opt2_optimized_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with FEAS</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">feas_optimized_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># for each vertex v in V, set r(v)=0</span>
+        <span class="n">r_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># repeat |V|-1 times:</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># calculate deltas for each v through CP algorithm</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">cp_delta_np</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">delta</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># retime the graph g following function r</span>
+            <span class="n">g_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="n">r_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+
+
+        <span class="n">r_final</span> <span class="o">=</span> <span class="n">merge_r_list</span><span class="p">(</span><span class="n">r_list</span><span class="p">)</span>
+        <span class="n">delta</span><span class="p">,</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cp_delta_clock</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
+
+        <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span>
+
+    <span class="k">def</span> <span class="nf">binary_search_minimum_feas_optimized_np</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+
+            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Check if x is present at mid</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feas_optimized_numpy</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
+                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
+                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
+                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
+                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># returns the clock period, retiming</span>
+        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span>
+
+
+    <span class="c1"># auxiliary function for CP algorithm.</span>
+    <span class="c1"># it returns only the delta function for each vertex (in the form of a dictionary)</span>
+
+    <span class="k">def</span> <span class="nf">cp_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+        <span class="c1"># Let G0 be the subgraph of G that contains those edges with w(e)=0</span>
+        <span class="c1"># elist_zero = []</span>
+
+        <span class="c1">#for edge in graph.edges:</span>
+        <span class="c1">#    if graph.edges[edge][&quot;weight&quot;] == 0:</span>
+        <span class="c1">#        elist_zero.append(edge)</span>
+
+        <span class="c1"># Let G0 be the subgraph of G that contains those edges with w(e)=0</span>
+        <span class="n">g_zero</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">g_zero</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span> <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># By W2, G0 is acyclic. Perform topol. sort s.t. if there is</span>
+        <span class="c1"># (u)-e-&gt;(v) =&gt; u &lt; v</span>
+        <span class="c1"># go through the vertices in that topol. sort order and compute delta_v:</span>
+        <span class="c1"># a. if there is no iincoming edge to v, delta_v = d(v)</span>
+        <span class="c1"># b. otherwise,</span>
+        <span class="c1"># delta_v = d(v) + max_{u in V s.t. (u)-e-&gt;(v) incoming and w(e)=0}(delta_u)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">g_zero</span><span class="p">):</span>
+            <span class="n">max_delta_u</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># for every incoming edge</span>
+            <span class="n">max_delta_u</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)),</span> <span class="p">[</span><span class="n">delta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">g_zero</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">v</span><span class="p">)],</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># for (u, _) in g_zero.in_edges(v):</span>
+            <span class="c1">#     if delta[u] &gt; max_delta_u:</span>
+            <span class="c1">#         max_delta_u = delta[u]</span>
+            <span class="n">delta</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">max_delta_u</span>
+
+        <span class="c1"># fill delta dict with the delays of the nodes not present in G0</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g_zero</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="n">delta</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+
+        <span class="c1"># returns the delta dictionary</span>
+        <span class="k">return</span> <span class="n">delta</span>
+
+
+    <span class="k">def</span> <span class="nf">cp_delta_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp_delta</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="c1"># if delta NOT empty, the maximum delta_v for v in V is the clock period</span>
+        <span class="c1"># otherwise, it is the maximum delay</span>
+        <span class="k">return</span> <span class="n">delta</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">delta</span> <span class="k">else</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">feas_optimized_cython</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># for each vertex v in V, set r(v)=0</span>
+        <span class="kn">from</span> <span class="nn">MyCython.utils</span> <span class="kn">import</span> <span class="n">cp_delta</span><span class="p">,</span> <span class="n">cp_delta_clock</span>
+        <span class="n">r_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># repeat |V|-1 times:</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># calculate deltas for each v through CP algorithm</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">cp_delta</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">delta</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">r</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># TODO DEBUG</span>
+            <span class="c1"># print(len([e for e in r.values() if e != 0]))</span>
+            <span class="c1"># retime the graph g following function r</span>
+            <span class="n">g_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="n">r_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">r_final</span> <span class="o">=</span> <span class="n">merge_r_list</span><span class="p">(</span><span class="n">r_list</span><span class="p">)</span>
+        <span class="n">delta</span><span class="p">,</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cp_delta_clock</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">)</span>
+
+        <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span>
+
+
+    <span class="k">def</span> <span class="nf">binary_search_minimum_feas_optimized_cython</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+
+            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="c1"># Check if x is present at mid</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feas_optimized_cython</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
+                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
+                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
+                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
+                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># returns the clock period, retiming</span>
+        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Retiming</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Nicolò Felicioni.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

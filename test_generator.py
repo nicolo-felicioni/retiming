@@ -1,13 +1,11 @@
-from GraphWrapper import *
+from Wrappers.GraphWrapper import *
 import time
 from random import randint
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import os
-import pandas as pd
-import cProfile
-import io
-import pstats
+
+from Wrappers.NewGraphWrapper import NewGraphWrapper
 
 
 def draw():
@@ -182,7 +180,7 @@ def test_including_WD(path):
 
 def test_sorted(path, algo_num):
 
-    assert algo_num == 1 or algo_num == 2, f"hey there's no OPT-{algo_num}."
+    assert algo_num == 1 or algo_num == 2 or algo_num == 3, f"hey there's no OPT-{algo_num}."
 
     print("-"*30)
     print(f"START TEST of {path}")
@@ -210,13 +208,21 @@ def test_sorted(path, algo_num):
         t0 = time.time()
         cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
         t1 = time.time()
-    else:
+    elif algo_num == 2:
         t0 = time.time()
         cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
         t1 = time.time()
+    else:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_feas_optimized_cython(d_elems_sorted)
+        t1 = time.time()
+
 
     t_opt = t1 - t0
-    print(f"opt{algo_num}:{t1 - t0}")
+    if algo_num == 3:
+        print(f"opt2 CYTHON:{t1 - t0}")
+    else:
+        print(f"opt{algo_num}:{t1 - t0}")
 
     print(f"total time: {t_wd+t_sort+t_opt}")
 
@@ -225,6 +231,58 @@ def test_sorted(path, algo_num):
                                                       f"cp1: {cp1}"
     print("tests ok")
 
+def test_sorted_misc(path, algo_num):
+
+    assert algo_num == 1 or algo_num == 2 or algo_num == 3, f"hey there's no OPT-{algo_num}."
+
+    print("-"*30)
+    print(f"START TEST of {path}")
+    print("-"*30)
+
+    test_graph = read_graph_dot_misc_l(path)
+
+    wrapper = GraphWrapper(test_graph)
+
+    print("initializing WD...")
+    t_init = time.time()
+    wrapper.init_WD()
+    t_wd = time.time()-t_init
+    print(f'WD init time:{t_wd}')
+
+    optimal_cp, _, _, _, _ = get_stats(wrapper)
+
+    t_start_sort = time.time()
+    print(f"opt{algo_num}: sorting D...")
+    d_elems_sorted = np.unique(wrapper.D)
+    t_sort = time.time() - t_start_sort
+    print(f"sorted D in {t_sort}")
+
+    if algo_num == 1:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
+        t1 = time.time()
+    elif algo_num == 2:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
+        t1 = time.time()
+    else:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_feas_optimized_cython(d_elems_sorted)
+        t1 = time.time()
+
+
+    t_opt = t1 - t0
+    if algo_num == 3:
+        print(f"opt2 CYTHON:{t1 - t0}")
+    else:
+        print(f"opt{algo_num}:{t1 - t0}")
+
+    print(f"total time: {t_wd+t_sort+t_opt}")
+
+    assert cp1 == optimal_cp, f"something went wrong." \
+                                                      f"optimal: {optimal_cp}" \
+                                                      f"cp1: {cp1}"
+    print("tests ok")
 
 
 def multiple_tests():
@@ -252,6 +310,46 @@ def multiple_tests_sorted():
 
 
 
+def test_new_wrapper(path):
+
+    print("-"*30)
+    print(f"START TEST NEW WRAPPER of {path}")
+    print("-"*30)
+
+    test_graph = read_graph_dot(path)
+
+    wrapper = NewGraphWrapper(test_graph)
+
+    print("initializing WD...")
+    t_init = time.time()
+    wrapper.init_WD()
+    t_wd = time.time()-t_init
+    print(f'WD init time:{t_wd}')
+
+    optimal_cp, _, _, _, _ = get_stats(wrapper)
+
+    t_start_sort = time.time()
+    print(f"opt2 new wrap: sorting D...")
+    d_elems_sorted = np.unique(wrapper.D)
+    t_sort = time.time() - t_start_sort
+    print(f"sorted D in {t_sort}")
+
+    t0 = time.time()
+    cp1, _ = wrapper.binary_search_minimum_feas(d_elems_sorted)
+    t1 = time.time()
+
+
+    t_opt = t1 - t0
+
+    print(f"opt2 new wrap:{t1 - t0}")
+
+    print(f"total time: {t_wd+t_sort+t_opt}")
+
+    assert cp1 == optimal_cp, f"something went wrong." \
+                                                      f"optimal: {optimal_cp}" \
+                                                      f"cp1: {cp1}"
+    print("tests ok")
+
 
 if __name__ == '__main__':
     #g, wrapper = main()
@@ -259,7 +357,13 @@ if __name__ == '__main__':
     # generate_test()
     # pr = cProfile.Profile()
     # pr.enable()
-    test_sorted(os.path.join("misc", "temp.dot"), 2)
+    # path = os.path.join("misc", "err-rand-20.dot")
+    path = os.path.join("graph_files", "N_200_p_0d1_upw_1000_upd_1000")
+    #for file in tqdm(os.listdir('selected_tests')):
+    #    test_sorted(os.path.join("selected_tests", file), 1)
+
+    #test_sorted(path, 2)
+    test_new_wrapper(path)
     # pr.disable()
     # s = io.StringIO()
     # sortby = 'cumulative'

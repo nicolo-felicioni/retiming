@@ -106,6 +106,20 @@ def get_retimed_graph(graph: nx.DiGraph, r: dict):
     return g_r
 
 
+# retime the global graph g following function r
+def get_retimed_graph_numpy(graph: nx.DiGraph, r: np.ndarray):
+
+    # for each (u)-e->(v):
+    # wr(e) = w(e) + r(v) - r(u)
+    # elist = [(u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)) for (u,v) in graph.edges]
+    # for (u, v) in graph.edges:
+    #     elist.append((u, v, graph.edges[u, v]["weight"] + r.get(v, 0) - r.get(u, 0)))
+
+    g_r = nx.DiGraph()
+    g_r.add_weighted_edges_from([(u, v, graph.edges[u, v]["weight"] + r[v] - r[u])
+                                 for (u, v) in graph.edges])
+    return g_r
+
 # function that merges a list of retimings (dictionaries)
 def merge_r_list(r_list):
     r_final = {}
@@ -161,7 +175,7 @@ def random_retime(graph):
     return r
 
 
-def read_graph_dot(path):
+def read_graph_dot_misc_d(path):
     g = nx.DiGraph(nx.nx_pydot.read_dot(path))
 
     # convert node labels to int
@@ -184,7 +198,31 @@ def read_graph_dot(path):
     return g
 
 
-def read_graph_dot_misc(path):
+def read_graph_dot_misc_l(path):
+
+    g = nx.DiGraph(nx.nx_pydot.read_dot(path))
+
+    # convert node labels to int
+    g = nx.relabel_nodes(g, lambda x: int(x) if x != 'vh' else x)
+
+    if 'vh' in g.nodes:
+        list_nodes = list(g.nodes)
+        list_nodes.remove('vh')
+        max_id = max(list_nodes)
+        g = nx.relabel_nodes(g, lambda x: max_id+1 if x == 'vh' else x)
+
+    # convert node delays to float
+    for node in g.nodes:
+        g.nodes[node]["delay"] = float(g.nodes[node]["component_delay"])
+
+    # convert edge w to int
+    for e in g.edges:
+        g.edges[e]["weight"] = int(g.edges[e]["wire_delay"])
+
+    return g
+
+
+def read_graph_dot(path):
     g = nx.DiGraph(nx.nx_pydot.read_dot(path))
 
     # convert node labels to int

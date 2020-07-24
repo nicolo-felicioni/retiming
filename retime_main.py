@@ -1,4 +1,4 @@
-from GraphWrapper import *
+from Wrappers.GraphWrapper import *
 import time
 
 if __name__ == '__main__':
