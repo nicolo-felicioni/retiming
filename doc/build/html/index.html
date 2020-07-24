@@ -50,6 +50,32 @@
 <li class="toctree-l1"><a class="reference internal" href="GraphWrapper.html">GraphWrapper</a></li>
 </ul>
 </div>
+<span class="target" id="module-Test.test_generator"></span><dl class="py function">
+<dt id="Test.test_generator.generate_test">
+<code class="sig-prename descclassname">Test.test_generator.</code><code class="sig-name descname">generate_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/test_generator.html#generate_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Test.test_generator.generate_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate test graphs as dot files.</p>
+<p>It is composed in three phases:</p>
+<p>1. It first generates a backbone_graph, i.e. a cycle (N nodes and N edges). Then, it creates a
+<a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.binomial_graph.html#networkx.generators.random_graphs.binomial_graph">binomial graph</a>
+with a probability p, and merges the two. It is important that the graph has the cyclic backbone because it is required that every node is reachable from any other (for W and D).</p>
+<p>2. After the merge, given two upperbounds upW and upD, respectively for the edge weights and the node delays,
+it initialize every node with a random delay from 1 to upD, and every edge with a random weight from 1 to upW.
+It is <strong>crucial</strong> that the weights of the graph are always &gt;=1, because in this way it is known that the optimal CP
+is the max{d(v)}.</p>
+<p>3. Now, the graph is complete, but it is in its optimal form. To randomize the graph the random_retime function (see utils)
+is used. After that, the graph is saved as dot file.</p>
+<p>These steps are repeated for different ranges of N, p, up_w, up_d. In particular:</p>
+<p>N in [5, 10, 20, 50, 100, 200, 500]</p>
+<p>p in [.0, .05, .1, .2, .3, .5, .75, 1]</p>
+<p>up_w in [1, 5, 10, 100, 1000, 10000]</p>
+<p>up_d in [1, 5, 10, 100, 1000, 10000]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>

@@ -15,6 +15,10 @@ Welcome to Retiming's documentation!
    GraphWrapper <GraphWrapper.rst>
 
 
+.. automodule:: Test.test_generator
+    :members:
+
+
 Indices and tables
 ==================
 

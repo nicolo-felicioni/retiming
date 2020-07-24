@@ -79,8 +79,8 @@ def generate_test():
 
     for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
         for p in tqdm([.0, .05, .1, .2, .3, .5, .75, 1]):
-            for up_w in tqdm([1, 5, 10, 100, 1000, 10000]):
-                for up_d in tqdm([1, 5, 10, 100, 1000, 10000]):
+            for up_w in [1, 5, 10, 100, 1000, 10000]:
+                for up_d in [1, 5, 10, 100, 1000, 10000]:
                     # generate a cyclic backbone
                     backbone_graph = nx.DiGraph()
                     for n in range(N):
@@ -230,6 +230,7 @@ def test_sorted(path, algo_num):
                                                       f"optimal: {optimal_cp}" \
                                                       f"cp1: {cp1}"
     print("tests ok")
+
 
 def test_sorted_misc(path, algo_num):
 
