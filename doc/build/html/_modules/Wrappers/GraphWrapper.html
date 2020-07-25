@@ -430,11 +430,18 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
 
     <span class="c1"># applies the retiming r on the graph if it&#39;s legal</span>
-    <span class="k">def</span> <span class="nf">set_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.set_retimed_graph"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.set_retimed_graph">[docs]</a>    <span class="k">def</span> <span class="nf">set_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        applies the retiming r on the graph if it&#39;s legal. Check done with check_legal_retimed_graph</span>
+
+<span class="sd">        :param r: the given retiming to set on the graph</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :raise: ValueError if the retiming is illegal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">check_legal_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The retiming is not legal.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_r</span></div>
 
 
     <span class="c1"># OPTIMIZATION FOR FEAS</span>

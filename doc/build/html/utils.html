@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utils &#8212; Retiming 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Test generator" href="test_generator.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_generator.html" title="Test generator"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-utils">
+<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="utils.check_legal_retimed_graph">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_legal_retimed_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span><span class="p">:</span> <span class="n">networkx.classes.digraph.DiGraph</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/utils.html#check_legal_retimed_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_legal_retimed_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the graph is legal after retiming, i.e. if all the w(e)&gt;=0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>graph</strong> – graph to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boolean, True if retiming is legal, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.random_retime">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">random_retime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#random_retime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.random_retime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random retime for a graph that is legal by construction.
+It finds, for each node, the lowerbound and the upperbound for the retiming of that node, and then
+chooses a random integer between lb and ub.
+Here is how the bounds are found:</p>
+<ol class="arabic">
+<li><p>set r(v):=0 for each v</p></li>
+<li><p>For each node v:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>find what is the minimum retimed incoming weight min_in_w_r</p></li>
+<li><p>find what is the minimum retimed outcoming weight min_out_w_r</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>The retiming is a random integer number between (-min_in_w_r, min_out_w_r)</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>graph</strong> – graph to retime</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a legal retime r</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="test_generator.html"
+                        title="previous chapter">Test generator</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_generator.html" title="Test generator"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+  </body>
+</html>

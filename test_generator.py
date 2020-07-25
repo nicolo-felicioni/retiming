@@ -1,83 +1,43 @@
-from Wrappers.GraphWrapper import *
-import time
-from random import randint
-import matplotlib.pyplot as plt
 from tqdm import tqdm
-import os
-
-from Wrappers.NewGraphWrapper import NewGraphWrapper
-
-
-def draw():
-
-    g = nx.DiGraph(nx.nx_pydot.read_dot("graph_files/bug5n9e"))
-    nx.draw_networkx(g)
-    # print(type(g))
-    plt.show()
-
-    # convert node labels to int
-    g = nx.relabel_nodes(g, lambda x: int(x))
-
-
-    # convert node delays to float
-    for node in g.nodes:
-        g.nodes[node]["delay"] = float(g.nodes[node]["delay"])
-
-
-    # convert edge w to int
-    for e in g.edges:
-        g.edges[e]["weight"] = int(g.edges[e]["weight"])
-
-    wrapper = GraphWrapper(g)
-    wrapper.init_WD()
-
-    print(wrapper.opt2())
-
-
-def main():
-
-    g = nx.binomial_graph(n=100, p=0.05, seed=42, directed=True)
-
-    for edge in g.edges:
-        g.edges[edge]["weight"] = randint(1, 5)
-
-    for node in g.nodes:
-        g.nodes[node]["delay"] = randint(1, 10)
-
-    print(f"Optimal CP: {max([g.nodes[node]['delay'] for node in g.nodes])}")
-
-    wrapper = GraphWrapper(g)
-
-    r = random_retime(wrapper.g)
-
-    wrapper.set_retimed_graph(r)
-    print("legal retiming found.")
-
-    _, cp = cp_delta_clock(wrapper.g)
-    wrapper.init_WD()
-
-    print(f'previous clock period: {cp}')
-    print(f'unique val of D: {len(np.unique(wrapper.D))}')
-    print(f'num of nodes: {len(g.nodes)}')
-    print(f'num of edges: {len(g.edges)}')
-
-    t0 = time.time()
-    print(wrapper.opt1())
-    t1 = time.time()
-    print(wrapper.opt2())
-    t2 = time.time()
-    print(wrapper.opt2_optimized())
-    t3 = time.time()
-
-    print(f"opt1:{t1 - t0}")
-    print(f"opt2:{t2 - t1}")
-    print(f"opt2_optimized:{t3 - t2}")
-    return g, wrapper
+import networkx as nx
+from random import randint
+from Wrappers.GraphWrapper import GraphWrapper
+from utils import random_retime
 
 
 def generate_test():
+    """
+    Generate test graphs as dot files.
 
-    for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
+    It is composed in three phases:
+
+    1. It first generates a backbone_graph, i.e. a cycle (N nodes and N edges). Then, it creates a
+    `binomial graph <https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.binomial_graph.html#networkx.generators.random_graphs.binomial_graph>`_
+    with a probability p, and merges the two. It is important that the graph has the cyclic backbone because it is required that every node is reachable from any other (for W and D).
+
+    2. After the merge, given two upperbounds upW and upD, respectively for the edge weights and the node delays,
+    it initialize every node with a random delay from 1 to upD, and every edge with a random weight from 1 to upW.
+    It is **crucial** that the weights of the graph are always >=1, because in this way it is known that the optimal CP
+    is the max{d(v)}.
+
+    3. Now, the graph is complete, but it is in its optimal form. To randomize the graph the random_retime function (see utils)
+    is used. After that, the graph is saved as dot file.
+
+    These steps are repeated for different ranges of N, p, up_w, up_d. In particular:
+
+    N in [5, 10, 20, 50, 75, 100, 125, 150, 175, 200, 500]
+
+    p in [.0, .05, .1, .2, .3, .5, .75, 1]
+
+    up_w in [1, 5, 10, 100, 1000, 10000]
+
+    up_d in [1, 5, 10, 100, 1000, 10000]
+
+    :return: None
+    """
+
+    # for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
+    for N in tqdm([75, 125, 150, 175]):
         for p in tqdm([.0, .05, .1, .2, .3, .5, .75, 1]):
             for up_w in [1, 5, 10, 100, 1000, 10000]:
                 for up_d in [1, 5, 10, 100, 1000, 10000]:
@@ -106,268 +66,5 @@ def generate_test():
                     nx.nx_pydot.write_dot(wrapper.g, f"graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
 
 
-def test(path):
-    print("-"*30)
-    print(f"start test of {path}")
-    print("-"*30)
-
-    test_graph = read_graph_dot(path)
-    optimal_cp = max([test_graph.nodes[node]['delay'] for node in test_graph.nodes])
-    print(f"Optimal CP: {optimal_cp}")
-
-    wrapper = GraphWrapper(test_graph)
-
-    wrapper.init_WD()
-
-    print(f'unique val of D: {len(np.unique(wrapper.D))}')
-    print(f'num of nodes: {len(test_graph.nodes)}')
-    print(f'num of edges: {len(test_graph.edges)}')
-
-    t0 = time.time()
-    cp1, _ = wrapper.opt1()
-    t1 = time.time()
-    cp2, _ = wrapper.opt2()
-    t2 = time.time()
-    cp2_optimized, _ = wrapper.opt2_optimized()
-    t3 = time.time()
-
-    print(f"opt1:{t1 - t0}")
-    print(f"opt2:{t2 - t1}")
-    print(f"opt2_optimized:{t3 - t2}")
-
-    assert cp1 == cp2 == cp2_optimized == optimal_cp, f"something went wrong." \
-                                                      f"optimal: {optimal_cp}" \
-                                                      f"cp1: {cp1}, cp2: {cp2}, cp2_optimized: {cp2_optimized}"
-    print("tests ok")
-
-
-def test_including_WD(path):
-    print("-"*30)
-    print(f"start test of {path}")
-    print("-"*30)
-
-    test_graph = read_graph_dot(path)
-    optimal_cp = max([test_graph.nodes[node]['delay'] for node in test_graph.nodes])
-    print(f"Optimal CP: {optimal_cp}")
-
-    wrapper = GraphWrapper(test_graph)
-
-    # wrapper.init_WD()
-
-    print(f'unique val of D: {len(np.unique(wrapper.D))}')
-    print(f'num of nodes: {len(test_graph.nodes)}')
-    print(f'num of edges: {len(test_graph.edges)}')
-
-    # t0 = time.time()
-    # cp1, _ = wrapper.opt1()
-    # wrapper.W = None
-    t1 = time.time()
-    cp2, _ = wrapper.opt2()
-    # wrapper.W = None
-    t2 = time.time()
-    # cp2_optimized, _ = wrapper.opt2_optimized()
-    # t3 = time.time()
-
-    # print(f"opt1:{t1 - t0}")
-    print(f"opt2:{t2 - t1}")
-    # print(f"opt2_optimized:{t3 - t2}")
-
-    # assert cp1 == cp2 == cp2_optimized == optimal_cp, f"something went wrong." \
-    #                                                   f"optimal: {optimal_cp}" \
-    #                                                   f"cp1: {cp1}, cp2: {cp2}, cp2_optimized: {cp2_optimized}"
-    print("tests ok")
-
-
-def test_sorted(path, algo_num):
-
-    assert algo_num == 1 or algo_num == 2 or algo_num == 3, f"hey there's no OPT-{algo_num}."
-
-    print("-"*30)
-    print(f"START TEST of {path}")
-    print("-"*30)
-
-    test_graph = read_graph_dot(path)
-
-    wrapper = GraphWrapper(test_graph)
-
-    print("initializing WD...")
-    t_init = time.time()
-    wrapper.init_WD()
-    t_wd = time.time()-t_init
-    print(f'WD init time:{t_wd}')
-
-    optimal_cp, _, _, _, _ = get_stats(wrapper)
-
-    t_start_sort = time.time()
-    print(f"opt{algo_num}: sorting D...")
-    d_elems_sorted = np.unique(wrapper.D)
-    t_sort = time.time() - t_start_sort
-    print(f"sorted D in {t_sort}")
-
-    if algo_num == 1:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
-        t1 = time.time()
-    elif algo_num == 2:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
-        t1 = time.time()
-    else:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_feas_optimized_cython(d_elems_sorted)
-        t1 = time.time()
-
-
-    t_opt = t1 - t0
-    if algo_num == 3:
-        print(f"opt2 CYTHON:{t1 - t0}")
-    else:
-        print(f"opt{algo_num}:{t1 - t0}")
-
-    print(f"total time: {t_wd+t_sort+t_opt}")
-
-    assert cp1 == optimal_cp, f"something went wrong." \
-                                                      f"optimal: {optimal_cp}" \
-                                                      f"cp1: {cp1}"
-    print("tests ok")
-
-
-def test_sorted_misc(path, algo_num):
-
-    assert algo_num == 1 or algo_num == 2 or algo_num == 3, f"hey there's no OPT-{algo_num}."
-
-    print("-"*30)
-    print(f"START TEST of {path}")
-    print("-"*30)
-
-    test_graph = read_graph_dot_misc_l(path)
-
-    wrapper = GraphWrapper(test_graph)
-
-    print("initializing WD...")
-    t_init = time.time()
-    wrapper.init_WD()
-    t_wd = time.time()-t_init
-    print(f'WD init time:{t_wd}')
-
-    optimal_cp, _, _, _, _ = get_stats(wrapper)
-
-    t_start_sort = time.time()
-    print(f"opt{algo_num}: sorting D...")
-    d_elems_sorted = np.unique(wrapper.D)
-    t_sort = time.time() - t_start_sort
-    print(f"sorted D in {t_sort}")
-
-    if algo_num == 1:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
-        t1 = time.time()
-    elif algo_num == 2:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
-        t1 = time.time()
-    else:
-        t0 = time.time()
-        cp1, _ = wrapper.binary_search_minimum_feas_optimized_cython(d_elems_sorted)
-        t1 = time.time()
-
-
-    t_opt = t1 - t0
-    if algo_num == 3:
-        print(f"opt2 CYTHON:{t1 - t0}")
-    else:
-        print(f"opt{algo_num}:{t1 - t0}")
-
-    print(f"total time: {t_wd+t_sort+t_opt}")
-
-    assert cp1 == optimal_cp, f"something went wrong." \
-                                                      f"optimal: {optimal_cp}" \
-                                                      f"cp1: {cp1}"
-    print("tests ok")
-
-
-def multiple_tests():
-    main_dir = "graph_files"
-    file_list = os.listdir(main_dir)
-    new_list = []
-    for f in file_list:
-        if "N_5_" in f:
-            new_list.append(f)
-
-    for f in file_list:
-        test(os.path.join(main_dir, f))
-
-
-def multiple_tests_sorted():
-    main_dir = "graph_files"
-    file_list = os.listdir(main_dir)
-    new_list = []
-    for f in file_list:
-        if "N_5_" in f:
-            new_list.append(f)
-
-    for f in file_list:
-        test_sorted(os.path.join(main_dir, f), 1)
-
-
-
-def test_new_wrapper(path):
-
-    print("-"*30)
-    print(f"START TEST NEW WRAPPER of {path}")
-    print("-"*30)
-
-    test_graph = read_graph_dot(path)
-
-    wrapper = NewGraphWrapper(test_graph)
-
-    print("initializing WD...")
-    t_init = time.time()
-    wrapper.init_WD()
-    t_wd = time.time()-t_init
-    print(f'WD init time:{t_wd}')
-
-    optimal_cp, _, _, _, _ = get_stats(wrapper)
-
-    t_start_sort = time.time()
-    print(f"opt2 new wrap: sorting D...")
-    d_elems_sorted = np.unique(wrapper.D)
-    t_sort = time.time() - t_start_sort
-    print(f"sorted D in {t_sort}")
-
-    t0 = time.time()
-    cp1, _ = wrapper.binary_search_minimum_feas(d_elems_sorted)
-    t1 = time.time()
-
-
-    t_opt = t1 - t0
-
-    print(f"opt2 new wrap:{t1 - t0}")
-
-    print(f"total time: {t_wd+t_sort+t_opt}")
-
-    assert cp1 == optimal_cp, f"something went wrong." \
-                                                      f"optimal: {optimal_cp}" \
-                                                      f"cp1: {cp1}"
-    print("tests ok")
-
-
 if __name__ == '__main__':
-    #g, wrapper = main()
-    # draw()
-    # generate_test()
-    # pr = cProfile.Profile()
-    # pr.enable()
-    # path = os.path.join("misc", "err-rand-20.dot")
-    path = os.path.join("graph_files", "N_200_p_0d1_upw_1000_upd_1000")
-    #for file in tqdm(os.listdir('selected_tests')):
-    #    test_sorted(os.path.join("selected_tests", file), 1)
-
-    #test_sorted(path, 2)
-    test_new_wrapper(path)
-    # pr.disable()
-    # s = io.StringIO()
-    # sortby = 'cumulative'
-    # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-    # ps.print_stats()
-    # print(s.getvalue())
+    generate_test()

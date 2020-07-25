@@ -390,6 +390,13 @@ class GraphWrapper:
 
     # applies the retiming r on the graph if it's legal
     def set_retimed_graph(self, r: dict):
+        """
+        applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph
+
+        :param r: the given retiming to set on the graph
+        :return: None
+        :raise: ValueError if the retiming is illegal
+        """
         g_r = self.get_retimed_graph(r)
         if not check_legal_retimed_graph(g_r):
             raise ValueError("The retiming is not legal.")

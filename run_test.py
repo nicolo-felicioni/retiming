@@ -91,9 +91,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--path')
     parser.add_argument('--algo_num')
+    parser.add_argument('--write')
     args = parser.parse_args()
 
     row = get_row_from_tuple(test_get_stats(args.path, int(args.algo_num)))
 
-    with open('Test/stat_files/test.csv', 'a') as fd:
-        fd.write(row)
+    if int(args.write) == 1:
+        with open('Test/stat_files/test.csv', 'a') as fd:
+            fd.write(row)

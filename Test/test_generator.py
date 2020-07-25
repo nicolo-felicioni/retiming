@@ -25,7 +25,7 @@ def generate_test():
 
     These steps are repeated for different ranges of N, p, up_w, up_d. In particular:
 
-    N in [5, 10, 20, 50, 100, 200, 500]
+    N in [5, 10, 20, 50, 75, 100, 125, 150, 175, 200, 500]
 
     p in [.0, .05, .1, .2, .3, .5, .75, 1]
 
@@ -36,7 +36,8 @@ def generate_test():
     :return: None
     """
 
-    for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
+    # for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
+    for N in tqdm([75, 125, 150, 175]):
         for p in tqdm([.0, .05, .1, .2, .3, .5, .75, 1]):
             for up_w in [1, 5, 10, 100, 1000, 10000]:
                 for up_d in [1, 5, 10, 100, 1000, 10000]:
@@ -62,7 +63,7 @@ def generate_test():
                     # randomization of the graph
                     wrapper.set_retimed_graph(r)
 
-                    nx.nx_pydot.write_dot(wrapper.g, f"graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
+                    nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
 
 
 if __name__ == '__main__':

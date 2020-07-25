@@ -1,0 +1,3 @@
+#!/bin/sh
+python3 -m cProfile -o profiles/N_100_p_0d75_upw_1000_upd_1000.profile run_test.py --path graph_files/N_100_p_0d75_upw_1000_upd_1000 --algo_num 1 --write 0
+snakeviz profiles/N_100_p_0d75_upw_1000_upd_1000.profile
