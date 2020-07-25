@@ -68,12 +68,13 @@ It can be proved that a retiming r is legal if G<sub>r</sub> satisfies W1.
 
 ## Algorithms to be implemented
 
-#### WD
+### WD
 Algorithm to compute the matrices W and D (shape: |V| x |V| ), defined like this:
 * W(u,v) = min{w(p): u -p-> v} (minimum number of registers in a path between u and v)
 * D(u,v) = max{d(p): u-p->v and w(p)=W(u,v)}
+
 The theoretical details of this algorithm are not relevant for the implementation, for more about the implementation details see the doc.
-#### OPT1
+### OPT1
 Algorithm that given a circuit G, returns the optimal cp and the corresponding retiming r.
 First, it is important to say that the following **conditions for a legal retiming** can be proved:
 1. r(u)-r(v) &le; w(e) for every edge u-e->v AND
@@ -85,15 +86,28 @@ First, it is important to say that the following **conditions for a legal retimi
 3. Binary search among the elements of D for the minimum achievable cp, to test whether each potential clock period c is feasible, apply the Bellman-Ford algorithm to determine if the conditions for a legal retiming can be satisfied.
 4. For the minimum achievable clock period, use the values for the r(v) found by BF.
 
+Running time: O( |V|<sup>3</sup>lg(|V|) )
+
 **BF algorithm:**
+Algorithm that solves a set of linear inequalities.
+ 1. Create a graph with a vertex for every variable and such that for every inequality x<sub>j</sub> - x<sub>i</sub> &le; b<sub>k</sub> there is an edge from i to j with weight b<sub>k</sub>.
+ 2. create a new node *start* linked with all the others with weight 0
+ 3. find the shortest paths from *start* to all the other nodes with [Bellman-Ford](https://en.wikipedia.org/wiki/Bellman–Ford_algorithm). If BF fails, the set of inequalities is unsolvable, if BF finds all the shortest paths, then the cost of the shortest-path(*start*, i) is a feasible assignment to x<sub>i</sub>.
 
+This is a general theoretical description. For the actual implementation in our particular case, see the docs.
 
-#### FEAS
-#### OPT2
+### OPT2
+Like OPT1, but the test of feasibility is done with FEAS algorithm, which is described below. Running time: O( |V| |E| lg(|V|) )
 
-
+**FEAS**
+Check if a certain clock period c is feasible.
+1. For each vertex v, set r(v):=0
+2. Repeat for |V|-1 times:
+	* Compute G<sub>r</sub> from r
+	*  Run CP algorithm on  G<sub>r</sub> to determine Δ(v) for each v
+	* For each v s.t. Δ(v)>c, set r(v):=r(v)+1
+3. Run CP algorithm on  G<sub>r</sub>. If cp( G<sub>r</sub>)>c, then c is not feasible. Otherwise c is feasible and r is the desired retiming.  
 ## Algorithms implementation
-
 
 ## Test creation
 
@@ -113,3 +127,4 @@ After activating the virtual environment, install python dependecies with the fo
 ```shell script
 pip install -r requirements.txt
 ```
+
