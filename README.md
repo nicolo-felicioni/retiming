@@ -7,7 +7,9 @@ This repository contains a Python 3 implementation of the paper [Retiming synchr
 ### Introduction
 The goal is to decrease as much as possible the clock period of a synchronous circuit by means of a technique called _retiming_, that does not increase latency. One example is the following of the digital correlator, taken from the original paper. The correlator takes a stream of bits x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ... as input and compares it with a fixed-length pattern          a<sub>0</sub>, a<sub>1</sub>, ... a<sub>k</sub>. After receiving each input x<sub>i</sub> (i &ge; k), the correlation produces as output the number of matches:
 
-<center> y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) , </center>
+<center>
+	y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) , 
+</center>
 
 where δ(x, y)=1 if x=y, and  δ(x, y)=0 otherwise (comparison function).
 The following figure shows a design of a simple correlator for k = 3.
