@@ -105,11 +105,40 @@ Check if a certain clock period c is feasible.
 3. Run CP algorithm on  G<sub>r</sub>. If cp( G<sub>r</sub>)>c, then c is not feasible. Otherwise c is feasible and r is the desired retiming.  
 ## Algorithms implementation
 
-Docs are already compiled in the *doc* directory. Open [doc/build/html/index.html](doc/build/html/index.html) for implementation details.
+Docs are already compiled in the *doc* directory. Open [doc/build/html/index.html](doc/build/html/index.html) in any browser for the documentation index.
+The implementation relies on the [NetworkX](https://networkx.github.io) library to build graphs, and uses the wrapper pattern to wrap the DiGraph object of NetworkX (for directed graph) within another object that implements the algorithm to be implemented and other auxiliary methods. The two main classes are GraphWrapper and NewGraphWrapper. 
+The first was used for OPT1 and OPT2, but a better version of OPT2 is contained in NewGraphWrapper. Also, in GraphWrapper there are some auxiliary function useful to create random tests such that:
+* check_legal_retimed_graph: checks if the graph is legal after retiming, i.e. if all the w(e)>=0 (condition W1.).
+* set_retimed_graph: applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph.
+
+For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper. 
 
 ## Test creation
 
+Graph to be tested generated random with the file test_generator.py (see the docs for details).
+To run the graph test generator:
+```shell script
+python3 test_generator.py
+```
+The rational of the creation of the tests is: by definition of the clock period, if we have a circuit with any edge e s.t. w(e)&ge;1, we know a priori that the optimal cp is max<sub>v</sub>d(v). After the creation of a random graph with this condition though, we want to randomise the graph in order to be difficult for OPT1/2 to find the retiming requested, therefore we exploit the retiming property that says that a retiming does not change the function of the circuit. Therefore we create a random retiming (and change the structure of the graph) in order to create the test graphs.
 ### Random retiming legal by construction
+This is done by the function in utils.py called random_retime. It finds, for each node, the lowerbound and the upperbound for the retiming of that node, and then  
+chooses a random integer between LB and UB.  
+Here is how the bounds are found:  
+  
+1. set r(v):=0 for each v  
+2. For each node v:  
+	 * find what is the minimum retimed incoming weight min_in_w_r  
+	 * find what is the minimum retimed outcoming weight min_out_w_r  
+3. The retiming is a random integer number between (-min_in_w_r, min_out_w_r)
+
+<p align="center">
+    <img width="50%" src="images/graph.png" />
+</p>
+
+<p align="center">
+    <img width="50%" src="images/retimedgraph.png" />
+</p>
 
 ## Assessment
 
