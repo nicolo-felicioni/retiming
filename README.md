@@ -159,8 +159,21 @@ Let's try to find the retiming for the central highlighted node. First we have t
 
 Now we see that min_in_w_r=0, while min_out_w_r=2. Therefore the interval is (0, 2). Let's try to set a retiming lower than the LB, for instance -1. From the formula of the retiming, the edge with wr=0 would have a new wr=-1, that violates W1. The same is if we try to set a retiming higher than 2.
 
+### Run selected tests
 
-## Assessment
+To run some selected tests, create a folder called selected_tests:
+```shell script
+mkdir selected_tests
+```
+and move some test graphs in there. Then, run:
+
+```shell script
+chmod +x run_selected_tests.sh
+./run_selected_tests.sh
+```
+
+
+## Assessment and Profiling
 
 To profile the code with cProfile, change the name of the file you want to run in the file time_profile.sh. Then:
 
