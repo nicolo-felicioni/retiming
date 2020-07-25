@@ -1,15 +1,14 @@
 # Retiming synchronous circuitry implementation
 
 This repository contains a Python 3 implementation of the paper [Retiming synchronous circuitry](https://people.eecs.berkeley.edu/~alanmi/courses/2008_290A/papers/leiserson_tech86.pdf) by Leiserson and Saxe.
+The first part of the readme (until the section "Algorithms to be implemented" included) is a summary of the original paper with an highlight to the theoretical details relevant to the implementation. The second part is about the actual implementation.
 
 ## The problem
 
 ### Introduction
 The goal is to decrease as much as possible the clock period of a synchronous circuit by means of a technique called _retiming_, that does not increase latency. One example is the following of the digital correlator, taken from the original paper. The correlator takes a stream of bits x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ... as input and compares it with a fixed-length pattern          a<sub>0</sub>, a<sub>1</sub>, ... a<sub>k</sub>. After receiving each input x<sub>i</sub> (i &ge; k), the correlation produces as output the number of matches:
 
-<center>
-	y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) , 
-</center>
+<center> y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) , </center>
 
 where δ(x, y)=1 if x=y, and  δ(x, y)=0 otherwise (comparison function).
 The following figure shows a design of a simple correlator for k = 3.
@@ -62,6 +61,55 @@ Running time is O(|E|).
     <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
 </p>
 
+A retiming is a function r that assigns to each vertex an integer (positive or negative) r(v). It specifies a transformation to a new graph G<sub>r</sub> that has the same vertices, edges and delays, but different weights such that for each edge e that links u to v,  w<sub>r</sub>(e)=w(e)+r(v)-r(u).
 
-## Algorithms implemented
+#### Condition for a legal retiming
+It can be proved that a retiming r is legal if G<sub>r</sub> satisfies W1.
 
+## Algorithms to be implemented
+
+#### WD
+Algorithm to compute the matrices W and D (shape: |V| x |V| ), defined like this:
+* W(u,v) = min{w(p): u -p-> v} (minimum number of registers in a path between u and v)
+* D(u,v) = max{d(p): u-p->v and w(p)=W(u,v)}
+The theoretical details of this algorithm are not relevant for the implementation, for more about the implementation details see the doc.
+#### OPT1
+Algorithm that given a circuit G, returns the optimal cp and the corresponding retiming r.
+First, it is important to say that the following **conditions for a legal retiming** can be proved:
+1. r(u)-r(v) &le; w(e) for every edge u-e->v AND
+2.  r(u)-r(v) &le; w(e) for all vertices u,v such that D(u,v) &gt; c.
+
+**OPT1 algorithm:**
+1. Compute W and D with WD algorithm
+2. Sort the elements in the range of D
+3. Binary search among the elements of D for the minimum achievable cp, to test whether each potential clock period c is feasible, apply the Bellman-Ford algorithm to determine if the conditions for a legal retiming can be satisfied.
+4. For the minimum achievable clock period, use the values for the r(v) found by BF.
+
+**BF algorithm:**
+
+
+#### FEAS
+#### OPT2
+
+
+## Algorithms implementation
+
+
+## Test creation
+
+### Random retiming legal by construction
+
+## Assessment
+
+
+## Requirements
+In this implementation were used:
+* **Python**: version 3.7.4. 
+* **Pip**: version 20.1.1.
+
+It is suggested to use a [python virtual environment](https://docs.python.org/3/library/venv.html).
+
+After activating the virtual environment, install python dependecies with the following bash command:
+```shell script
+pip install -r requirements.txt
+```
