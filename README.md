@@ -57,10 +57,6 @@ Running time is O(|E|).
 
 ### Retiming
 
-<p align="center">
-    <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
-</p>
-
 A retiming is a function r that assigns to each vertex an integer (positive or negative) r(v). It specifies a transformation to a new graph G<sub>r</sub> that has the same vertices, edges and delays, but different weights such that for each edge e that links u to v,  w<sub>r</sub>(e)=w(e)+r(v)-r(u).
 
 #### Condition for a legal retiming
