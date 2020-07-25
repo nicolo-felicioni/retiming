@@ -18,7 +18,7 @@ The following figure shows a design of a simple correlator for k = 3.
 Suppose that each adder has a propagation delay of 7 esec (a fictitious amount of time), and each comparator has a delay of 3 esec. Then the clock period must be at least 24 esec, i.e. the time for a signal to propagate from the register on the connection labeled A through one comparator and three adders. 
 Better performance can be reached by removing register on connection A and inserting a new register on connection B, as shown in the following figure.
 <p align="center">
-    <img width="10%" src="images/correlatormod.png" />
+    <img width="50%" src="images/correlatormod.png" />
 </p>
 The clock period now is decreased by 7 exec. 
 
@@ -29,7 +29,7 @@ The clock period now is decreased by 7 exec.
 
 Circuits are modelled as graphs, as shown in the figure below, where there is the graph of the first correlator. 
 <p align="center">
-    <img width="10%" src="images/correlatorgraph.png" />
+    <img width="50%" src="images/correlatorgraph.png" />
 </p>
 
 Each vertex is weighted with its propagation delay *d(v)*, while each edge is weighted with its register count *w(e)*.
