@@ -183,3 +183,9 @@ chmod +x time_profile.sh
 ./time_profile.sh
 ```
 will open a window in your browser. This visualisation was used to optimise iteratively the code of OPT2.
+
+Profiles made with cProfile are in the [profile](profiles/) folder. In order to visualise a profile, the command is:
+```shell script
+snakeviz path-to-the-file
+```
+From those profile is clear the improvement of the NewGraphWrapper implementation of OPT2 (its profile is [here](profiles/N_200_p_0d75_upw_1000_upd_1000_algo3.profile)) from the GraphWrapper one (profiled [here](profiles/N_200_p_0d75_upw_1000_upd_1000_algo2.profile)).
