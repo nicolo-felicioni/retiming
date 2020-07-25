@@ -57,6 +57,9 @@ Running time is O(|E|).
 
 ### Retiming
 
+<p align="center">
+    <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
+</p>
 A retiming is a function r that assigns to each vertex an integer (positive or negative) r(v). It specifies a transformation to a new graph G<sub>r</sub> that has the same vertices, edges and delays, but different weights such that for each edge e that links u to v,  w<sub>r</sub>(e)=w(e)+r(v)-r(u).
 
 #### Condition for a legal retiming
@@ -115,6 +118,7 @@ Other useful functions are in utils.py.
 For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper.
 
 
+
 ## Requirements
 In this implementation were used:
 * **Python**: version 3.7.4. 
@@ -126,7 +130,6 @@ After activating the virtual environment, install python dependecies with the fo
 ```shell script
 pip install -r requirements.txt
 ```
-
 ## Test creation
 
 Graph to be tested generated random with the file test_generator.py (see the docs for details).
