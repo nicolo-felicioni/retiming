@@ -132,13 +132,20 @@ Here is how the bounds are found:
 	 * find what is the minimum retimed outcoming weight min_out_w_r  
 3. The retiming is a random integer number between (-min_in_w_r, min_out_w_r)
 
-<p align="center">
-    <img width="50%" src="images/graph.png" />
-</p>
+An example is in the figure below.
 
 <p align="center">
-    <img width="50%" src="images/retimedgraph.png" />
+    <img width="40%" src="images/graph.png" />
 </p>
+
+Let's try to find the retiming for the central highlighted node. First we have to calculate the temporary retiming for the incoming and outcoming edges:
+
+<p align="center">
+    <img width="40%" src="images/retimedgraph.png" />
+</p>
+
+Now we see that min_in_w_r=0, while min_out_w_r=2. Therefore the interval is (0, 2). Let's try to set a retiming lower than the LB, for instance -1. From the formula of the retiming, the edge with wr=0 would have a new wr=-1, that violates W1. The same is if we try to set a retiming higher than 2.
+
 
 ## Assessment
 
