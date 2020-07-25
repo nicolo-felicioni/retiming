@@ -111,7 +111,20 @@ The first was used for OPT1 and OPT2, but a better version of OPT2 is contained 
 * check_legal_retimed_graph: checks if the graph is legal after retiming, i.e. if all the w(e)>=0 (condition W1.).
 * set_retimed_graph: applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph.
 
-For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper. 
+For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper.
+
+
+## Requirements
+In this implementation were used:
+* **Python**: version 3.7.4. 
+* **Pip**: version 20.1.1.
+
+It is suggested to use a [python virtual environment](https://docs.python.org/3/library/venv.html).
+
+After activating the virtual environment, install python dependecies with the following bash command:
+```shell script
+pip install -r requirements.txt
+```
 
 ## Test creation
 
@@ -149,15 +162,10 @@ Now we see that min_in_w_r=0, while min_out_w_r=2. Therefore the interval is (0,
 
 ## Assessment
 
+To profile the code with cProfile, change the name of the file you want to run in the file time_profile.sh. Then:
 
-## Requirements
-In this implementation were used:
-* **Python**: version 3.7.4. 
-* **Pip**: version 20.1.1.
-
-It is suggested to use a [python virtual environment](https://docs.python.org/3/library/venv.html).
-
-After activating the virtual environment, install python dependecies with the following bash command:
 ```shell script
-pip install -r requirements.txt
+chmod +x time_profile.sh
+./time_profile.sh
 ```
+will open a window in your browser. This visualisation was used to optimise iteratively the code of OPT2.
