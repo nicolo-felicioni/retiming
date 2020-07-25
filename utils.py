@@ -2,9 +2,15 @@ import networkx as nx
 from random import randint
 import numpy as np
 
-# checks if the graph is legal after retiming,
-# i.e. if all the w(e)>=0
+
+
 def check_legal_retimed_graph(graph: nx.DiGraph) -> bool:
+    """
+    checks if the graph is legal after retiming, i.e. if all the w(e)>=0
+
+    :param graph: graph to check
+    :return: boolean, True if retiming is legal, False otherwise
+    """
     for edge in graph.edges:
         if graph.edges[edge]["weight"] < 0:
             return False
@@ -139,6 +145,26 @@ def merge_r_list(r_list):
 
 
 def random_retime(graph):
+    """
+    Creates a random retime for a graph that is legal by construction.
+    It finds, for each node, the lowerbound and the upperbound for the retiming of that node, and then
+    chooses a random integer between lb and ub.
+    Here is how the bounds are found:
+
+    #. set r(v):=0 for each v
+
+    #. For each node v:
+
+        * find what is the minimum retimed incoming weight min_in_w_r
+
+        * find what is the minimum retimed outcoming weight min_out_w_r
+
+    #. The retiming is a random integer number between (-min_in_w_r, min_out_w_r)
+
+    :param graph: graph to retime
+    :return: a legal retime r
+    """
+
     # calculate a random legal retiming
     r = {}
     # for each node

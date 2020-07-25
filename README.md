@@ -13,12 +13,12 @@ The goal is to decrease as much as possible the clock period of a synchronous ci
 where δ(x, y)=1 if x=y, and  δ(x, y)=0 otherwise (comparison function).
 The following figure shows a design of a simple correlator for k = 3.
 <p align="center">
-    <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
+    <img width="50%" src="images/correlator.png" />
 </p>
 Suppose that each adder has a propagation delay of 7 esec (a fictitious amount of time), and each comparator has a delay of 3 esec. Then the clock period must be at least 24 esec, i.e. the time for a signal to propagate from the register on the connection labeled A through one comparator and three adders. 
 Better performance can be reached by removing register on connection A and inserting a new register on connection B, as shown in the following figure.
 <p align="center">
-    <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
+    <img width="50%" src="images/correlatormod.png" />
 </p>
 The clock period now is decreased by 7 exec. 
 
@@ -29,7 +29,7 @@ The clock period now is decreased by 7 exec.
 
 Circuits are modelled as graphs, as shown in the figure below, where there is the graph of the first correlator. 
 <p align="center">
-    <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
+    <img width="50%" src="images/correlatorgraph.png" />
 </p>
 
 Each vertex is weighted with its propagation delay *d(v)*, while each edge is weighted with its register count *w(e)*.
@@ -60,7 +60,6 @@ Running time is O(|E|).
 <p align="center">
     <img width="10%" src="https://seeklogo.com/images/T/twitter-logo-A84FE9258E-seeklogo.com.png" />
 </p>
-
 A retiming is a function r that assigns to each vertex an integer (positive or negative) r(v). It specifies a transformation to a new graph G<sub>r</sub> that has the same vertices, edges and delays, but different weights such that for each edge e that links u to v,  w<sub>r</sub>(e)=w(e)+r(v)-r(u).
 
 #### Condition for a legal retiming
@@ -109,13 +108,15 @@ Check if a certain clock period c is feasible.
 3. Run CP algorithm on  G<sub>r</sub>. If cp( G<sub>r</sub>)>c, then c is not feasible. Otherwise c is feasible and r is the desired retiming.  
 ## Algorithms implementation
 
-Docs are already compiled in the *doc* directory. Open [doc/build/html/index.html](doc/build/html/index.html) for implementation details.
+Docs are already compiled in the *doc* directory. Open [doc/build/html/index.html](doc/build/html/index.html) in any browser for the documentation index.
+The implementation relies on the [NetworkX](https://networkx.github.io) library to build graphs, and uses the wrapper pattern to wrap the DiGraph object of NetworkX (for directed graph) within another object that implements the algorithm to be implemented and other auxiliary methods. The two main classes are GraphWrapper and NewGraphWrapper. 
+The first was used for OPT1 and OPT2, but a better version of OPT2 is contained in NewGraphWrapper. Also, in GraphWrapper there are some auxiliary function useful to create random tests such that:
+* check_legal_retimed_graph: checks if the graph is legal after retiming, i.e. if all the w(e)>=0 (condition W1.).
+* set_retimed_graph: applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph.
 
-## Test creation
+Other useful functions are in utils.py.
+For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper.
 
-### Random retiming legal by construction
-
-## Assessment
 
 
 ## Requirements
@@ -129,3 +130,59 @@ After activating the virtual environment, install python dependecies with the fo
 ```shell script
 pip install -r requirements.txt
 ```
+## Test creation
+
+Graph to be tested generated random with the file test_generator.py (see the docs for details).
+To run the graph test generator:
+```shell script
+python3 test_generator.py
+```
+The rational of the creation of the tests is: by definition of the clock period, if we have a circuit with any edge e s.t. w(e)&ge;1, we know a priori that the optimal cp is max<sub>v</sub>d(v). After the creation of a random graph with this condition though, we want to randomise the graph in order to be difficult for OPT1/2 to find the retiming requested, therefore we exploit the retiming property that says that a retiming does not change the function of the circuit. Therefore we create a random retiming (and change the structure of the graph) in order to create the test graphs.
+### Random retiming legal by construction
+This is done by the function in utils.py called random_retime. It finds, for each node, the lowerbound and the upperbound for the retiming of that node, and then  
+chooses a random integer between LB and UB.  
+Here is how the bounds are found:  
+  
+1. set r(v):=0 for each v  
+2. For each node v:  
+	 * find what is the minimum retimed incoming weight min_in_w_r  
+	 * find what is the minimum retimed outcoming weight min_out_w_r  
+3. The retiming is a random integer number between (-min_in_w_r, min_out_w_r)
+
+An example is in the figure below.
+
+<p align="center">
+    <img width="40%" src="images/graph.png" />
+</p>
+
+Let's try to find the retiming for the central highlighted node. First we have to calculate the temporary retiming for the incoming and outcoming edges:
+
+<p align="center">
+    <img width="40%" src="images/retimedgraph.png" />
+</p>
+
+Now we see that min_in_w_r=0, while min_out_w_r=2. Therefore the interval is (0, 2). Let's try to set a retiming lower than the LB, for instance -1. From the formula of the retiming, the edge with wr=0 would have a new wr=-1, that violates W1. The same is if we try to set a retiming higher than 2.
+
+### Run selected tests
+
+To run some selected tests, create a folder called selected_tests:
+```shell script
+mkdir selected_tests
+```
+and move some test graphs in there. Then, run:
+
+```shell script
+chmod +x run_selected_tests.sh
+./run_selected_tests.sh
+```
+
+
+## Assessment and Profiling
+
+To profile the code with cProfile, change the name of the file you want to run in the file time_profile.sh. Then:
+
+```shell script
+chmod +x time_profile.sh
+./time_profile.sh
+```
+will open a window in your browser. This visualisation was used to optimise iteratively the code of OPT2.

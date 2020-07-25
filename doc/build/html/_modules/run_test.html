@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>run_test &#8212; Retiming 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">run_test</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for run_test</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">Wrappers.GraphWrapper</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+<span class="kn">from</span> <span class="nn">Wrappers.NewGraphWrapper</span> <span class="kn">import</span> <span class="n">NewGraphWrapper</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">def</span> <span class="nf">get_row_from_tuple</span><span class="p">(</span><span class="n">tup</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="n">row</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)):</span>
+        <span class="n">row</span> <span class="o">+=</span> <span class="s1">&#39;,&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">row</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tup</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">row</span>
+
+
+<div class="viewcode-block" id="test_get_stats"><a class="viewcode-back" href="../index.html#run_test.test_get_stats">[docs]</a><span class="k">def</span> <span class="nf">test_get_stats</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">algo_num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param path: the path of the graph file</span>
+<span class="sd">    :param algo_num: 1 --&gt; opt1, 2 --&gt; opt2 old wrap, 3 --&gt; opt2 new wrap</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;hey there&#39;s no OPT-</span><span class="si">{</span><span class="n">algo_num</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;START TEST of </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="n">test_graph</span> <span class="o">=</span> <span class="n">read_graph_dot</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">algo_num</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">wrapper</span> <span class="o">=</span> <span class="n">GraphWrapper</span><span class="p">(</span><span class="n">test_graph</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wrapper</span> <span class="o">=</span> <span class="n">NewGraphWrapper</span><span class="p">(</span><span class="n">test_graph</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing WD...&quot;</span><span class="p">)</span>
+    <span class="n">t_init</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">wrapper</span><span class="o">.</span><span class="n">init_WD</span><span class="p">()</span>
+    <span class="n">t_wd</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t_init</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WD init time:</span><span class="si">{</span><span class="n">t_wd</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">optimal_cp</span><span class="p">,</span> <span class="n">n_unique_D</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">,</span> <span class="n">n_edges_zero</span> <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)</span>
+
+    <span class="n">t_start_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;opt</span><span class="si">{</span><span class="n">algo_num</span><span class="si">}</span><span class="s2">: sorting D...&quot;</span><span class="p">)</span>
+    <span class="n">d_elems_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+    <span class="n">t_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start_sort</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sorted D in </span><span class="si">{</span><span class="n">t_sort</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">cp1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">binary_search_minimum_bf</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">cp1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># NEW WRAPPER</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">cp1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+
+    <span class="n">t_opt</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span>
+    <span class="k">if</span> <span class="n">algo_num</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;opt2 NEW WRAP:</span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;opt</span><span class="si">{</span><span class="n">algo_num</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;total time: </span><span class="si">{</span><span class="n">t_wd</span><span class="o">+</span><span class="n">t_sort</span><span class="o">+</span><span class="n">t_opt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">is_ok</span> <span class="o">=</span> <span class="n">cp1</span> <span class="o">==</span> <span class="n">optimal_cp</span>
+    <span class="k">assert</span> <span class="n">is_ok</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;something went wrong.  optimal: </span><span class="si">{</span><span class="n">optimal_cp</span><span class="si">}</span><span class="s2">&quot;</span> \
+                                          <span class="sa">f</span><span class="s2">&quot;cp1: </span><span class="si">{</span><span class="n">cp1</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tests ok&quot;</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span><span class="p">,</span> <span class="n">algo_num</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">,</span> <span class="n">n_edges_zero</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">optimal_cp</span><span class="p">),</span> <span class="n">n_unique_D</span><span class="p">,</span> <span class="n">t_wd</span><span class="p">,</span> <span class="n">t_opt</span><span class="p">,</span> <span class="n">is_ok</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--path&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--algo_num&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">row</span> <span class="o">=</span> <span class="n">get_row_from_tuple</span><span class="p">(</span><span class="n">test_get_stats</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">algo_num</span><span class="p">)))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;Test/stat_files/test.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">run_test</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+  </body>
+</html>

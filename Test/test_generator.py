@@ -63,7 +63,7 @@ def generate_test():
                     # randomization of the graph
                     wrapper.set_retimed_graph(r)
 
-                    nx.nx_pydot.write_dot(wrapper.g, f"graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
+                    nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
 
 
 if __name__ == '__main__':

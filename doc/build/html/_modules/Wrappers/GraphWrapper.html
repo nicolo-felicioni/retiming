@@ -6,29 +6,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wrappers.GraphWrapper &#8212; Retiming 1.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wrappers.GraphWrapper</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <h1>Source code for Wrappers.GraphWrapper</h1><div class="highlight"><pre>
@@ -39,7 +46,7 @@
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 
-<div class="viewcode-block" id="CustomWeight"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.CustomWeight">[docs]</a><span class="k">class</span> <span class="nc">CustomWeight</span><span class="p">:</span>
+<div class="viewcode-block" id="CustomWeight"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.CustomWeight">[docs]</a><span class="k">class</span> <span class="nc">CustomWeight</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom weight class, needed for calculating W and D.</span>
 
@@ -77,7 +84,7 @@
 
 
 
-<div class="viewcode-block" id="GraphWrapper"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper">[docs]</a><span class="k">class</span> <span class="nc">GraphWrapper</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphWrapper"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper">[docs]</a><span class="k">class</span> <span class="nc">GraphWrapper</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper class that contains the nx.DiGraph graph. This class was used for OPT1 and OPT2,</span>
 <span class="sd">    but a better version of OPT2 is contained in NewGraphWrapper.</span>
@@ -99,7 +106,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 
-<div class="viewcode-block" id="GraphWrapper.init_WD"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.init_WD">[docs]</a>    <span class="k">def</span> <span class="nf">init_WD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.init_WD"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.init_WD">[docs]</a>    <span class="k">def</span> <span class="nf">init_WD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialization of the two matrices W, D. It calls the function WD.</span>
 
@@ -107,7 +114,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">WD</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GraphWrapper.WD"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.WD">[docs]</a>    <span class="k">def</span> <span class="nf">WD</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.WD"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.WD">[docs]</a>    <span class="k">def</span> <span class="nf">WD</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates and returns W, D matrices as 2D numpy array.</span>
 <span class="sd">        W and D are \|V\| x \|V\|.</span>
@@ -196,7 +203,7 @@
         <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">D</span>
 
 
-<div class="viewcode-block" id="GraphWrapper.test_feasibility_bf"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf">[docs]</a>    <span class="k">def</span> <span class="nf">test_feasibility_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.test_feasibility_bf"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf">[docs]</a>    <span class="k">def</span> <span class="nf">test_feasibility_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Bellman-Ford test for feasibility</span>
 <span class="sd">        constraints:</span>
@@ -261,7 +268,7 @@
 
         <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span></div>
 
-<div class="viewcode-block" id="GraphWrapper.binary_search_minimum_bf"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf">[docs]</a>    <span class="k">def</span> <span class="nf">binary_search_minimum_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.binary_search_minimum_bf"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf">[docs]</a>    <span class="k">def</span> <span class="nf">binary_search_minimum_bf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the minimum clock period feasible given a set of possible clock periods sorted.</span>
 
@@ -304,7 +311,7 @@
         <span class="k">del</span> <span class="n">saved_r</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span></div>
 
-<div class="viewcode-block" id="GraphWrapper.opt1"><a class="viewcode-back" href="../../index.html#Wrappers.GraphWrapper.GraphWrapper.opt1">[docs]</a>    <span class="k">def</span> <span class="nf">opt1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.opt1"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.opt1">[docs]</a>    <span class="k">def</span> <span class="nf">opt1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        OPT-1 algorithm to find the best feasible clock period.</span>
 
@@ -423,31 +430,21 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
 
     <span class="c1"># applies the retiming r on the graph if it&#39;s legal</span>
-    <span class="k">def</span> <span class="nf">set_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphWrapper.set_retimed_graph"><a class="viewcode-back" href="../../GraphWrapper.html#Wrappers.GraphWrapper.GraphWrapper.set_retimed_graph">[docs]</a>    <span class="k">def</span> <span class="nf">set_retimed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        applies the retiming r on the graph if it&#39;s legal. Check done with check_legal_retimed_graph</span>
+
+<span class="sd">        :param r: the given retiming to set on the graph</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :raise: ValueError if the retiming is illegal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">check_legal_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The retiming is not legal.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_r</span>
-
-    <span class="c1"># opt2 but without the operations of init W, D and d_elems_sorted</span>
-    <span class="c1"># returns the clock period, retiming</span>
-    <span class="k">def</span> <span class="nf">opt1_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
-
-        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
-        <span class="c1"># check with BF</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_bf</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
-
-    <span class="c1"># opt2 but without the operations of init W, D and d_elems_sorted</span>
-    <span class="c1"># returns the clock period, retiming</span>
-    <span class="k">def</span> <span class="nf">opt2_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-
-        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
-        <span class="c1"># check with FEAS</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">g_r</span></div>
 
 
     <span class="c1"># OPTIMIZATION FOR FEAS</span>
-
 
     <span class="c1"># like feas, but with an optimized loop that doesn&#39;t re-apply the whole retiming</span>
     <span class="c1"># it applies only the changed part</span>
@@ -529,70 +526,6 @@
         <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
         <span class="c1"># check with FEAS</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">opt2_optimized_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-
-        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
-        <span class="c1"># check with FEAS</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas_optimized</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">feas_optimized_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="c1"># for each vertex v in V, set r(v)=0</span>
-        <span class="n">r_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">g_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="c1"># repeat |V|-1 times:</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="c1"># calculate deltas for each v through CP algorithm</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="n">cp_delta_np</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">delta</span><span class="p">):</span>
-
-                <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
-                    <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-
-            <span class="c1"># retime the graph g following function r</span>
-            <span class="n">g_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_retimed_graph</span><span class="p">(</span><span class="n">g_r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-            <span class="n">r_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-
-
-
-        <span class="n">r_final</span> <span class="o">=</span> <span class="n">merge_r_list</span><span class="p">(</span><span class="n">r_list</span><span class="p">)</span>
-        <span class="n">delta</span><span class="p">,</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cp_delta_clock</span><span class="p">(</span><span class="n">g_r</span><span class="p">)</span>
-
-        <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span>
-
-    <span class="k">def</span> <span class="nf">binary_search_minimum_feas_optimized_np</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_elems_sorted</span><span class="p">):</span>
-        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">saved_r</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">high</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">mid</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
-
-            <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">high</span> <span class="o">+</span> <span class="n">low</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-
-            <span class="c1"># Check if x is present at mid</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;testing </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feas_optimized_numpy</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span><span class="si">}</span><span class="s2"> feasible? </span><span class="si">{</span><span class="n">is_feasible</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">is_feasible</span><span class="p">:</span>
-                <span class="c1"># if d_elems_sorted[mid] &lt; minimum:</span>
-                <span class="c1">#     minimum = d_elems_sorted[mid]</span>
-                <span class="n">minimum</span> <span class="o">=</span> <span class="n">d_elems_sorted</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span>
-                <span class="n">saved_r</span> <span class="o">=</span> <span class="n">r</span>
-                <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span>
-
-        <span class="c1"># returns the clock period, retiming</span>
-        <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span>
 
 
     <span class="c1"># auxiliary function for CP algorithm.</span>
@@ -704,32 +637,12 @@
         <span class="k">return</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">saved_r</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">Retiming</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -740,29 +653,27 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2020, Nicolò Felicioni.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Retiming 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wrappers.GraphWrapper</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
   </body>
 </html>

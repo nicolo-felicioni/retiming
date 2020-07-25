@@ -2,161 +2,100 @@ from Wrappers.GraphWrapper import *
 import time
 from random import randint
 
+from Wrappers.NewGraphWrapper import NewGraphWrapper
+import argparse
+import os
 
-def main():
 
-    g = nx.binomial_graph(n=200, p=0.25, seed=42, directed=True)
+def get_row_from_tuple(tup: tuple):
+    row = '\n'
+    row += str(tup[0])
+    for i in range(1, len(tup)):
+        row += ','
+        if isinstance(tup[i] , float):
+            row += f"{tup[i]:.5f}"
+        else:
+            row += str(tup[i])
 
-    for edge in g.edges:
-        g.edges[edge]["weight"] = 1
+    return row
 
-    for node in g.nodes:
-        g.nodes[node]["delay"] = 10
 
-    wrapper = GraphWrapper(g)
+def test_get_stats(path, algo_num):
+    """
+    :param path: the path of the graph file
+    :param algo_num: 1 --> opt1, 2 --> opt2 old wrap, 3 --> opt2 new wrap
+    :return:
+    """
 
-    found_retiming = False
+    assert algo_num == 1 or algo_num == 2 or algo_num == 3, f"hey there's no OPT-{algo_num}."
 
-    while not found_retiming:
-        try:
-            # calculate a random legal retiming
-            r = {}
-            # for each node
-            for node in wrapper.g.nodes:
-                min_in_w_r = np.inf
-                min_out_w_r = np.inf
-                # for each incoming edge
-                for e in wrapper.g.in_edges(node):
-                    tail_node = e[0]
-                    # calculate the temporary w of the retimed edge
-                    # for the retiming of the tail node: if it is not set, take 0
-                    w_r = wrapper.g.edges[e]["weight"] - r.get(tail_node, 0)
-                    assert w_r >= 0, "the retiming is not legal."
+    print("-"*30)
+    print(f"START TEST of {path}")
+    print("-"*30)
 
-                    # take note of what is the minimum retimed incoming weight
-                    if w_r < min_in_w_r:
-                        min_in_w_r = w_r
+    test_graph = read_graph_dot(path)
 
-                # for each outcoming edge
-                for e in wrapper.g.out_edges(node):
-                    head_node = e[1]
-                    # calculate the temporary w of the retimed edge
-                    # for the retiming of the tail node: if it is not set, take 0
-                    w_r = wrapper.g.edges[e]["weight"] + r.get(head_node, 0)
-                    assert w_r >= 0, "the retiming is not legal."
+    if algo_num != 3:
+        wrapper = GraphWrapper(test_graph)
+    else:
+        wrapper = NewGraphWrapper(test_graph)
 
-                    # take note of what is the minimum retimed incoming weight
-                    if w_r < min_out_w_r:
-                        min_out_w_r = w_r
-
-                # now we have lowerbound and upperbound for the random choice
-                r[int(node)] = randint(-min_in_w_r, min_out_w_r)
-
-            wrapper.set_retimed_graph(r)
-            found_retiming = True
-        except ValueError:
-            print("whoops.")
-            found_retiming = False
-
-    print("legal retiming found.")
-
-    _, cp = cp_delta_clock(wrapper.g)
+    print("initializing WD...")
+    t_init = time.time()
     wrapper.init_WD()
+    t_wd = time.time()-t_init
+    print(f'WD init time:{t_wd}')
 
-    print(f'previous clock period: {cp}')
-    print(f'unique val of D: {len(np.unique(wrapper.D))}')
-    print(f'num of nodes: {len(g.nodes)}')
-    print(f'num of edges: {len(g.edges)}')
+    optimal_cp, n_unique_D, n_nodes, n_edges, n_edges_zero = get_stats(wrapper)
 
-    # t0 = time.time()
-    # print(wrapper.opt1())
-    t1 = time.time()
-    print(wrapper.opt2())
-    t2 = time.time()
-
-    # print(f"opt1:{t1 - t0}")
-    print(f"opt2:{t2 - t1}")
-    return wrapper
-
-def test_initialized():
-
-    g = nx.binomial_graph(n=150, p=0.25, seed=42, directed=True)
-
-    for edge in g.edges:
-        g.edges[edge]["weight"] = 1
-
-    for node in g.nodes:
-        g.nodes[node]["delay"] = 10
-
-    wrapper = GraphWrapper(g)
-
-    found_retiming = False
-
-    while not found_retiming:
-        try:
-            # calculate a random legal retiming
-            r = {}
-            # for each node
-            for node in wrapper.g.nodes:
-                min_in_w_r = np.inf
-                min_out_w_r = np.inf
-                # for each incoming edge
-                for e in wrapper.g.in_edges(node):
-                    tail_node = e[0]
-                    # calculate the temporary w of the retimed edge
-                    # for the retiming of the tail node: if it is not set, take 0
-                    w_r = wrapper.g.edges[e]["weight"] - r.get(tail_node, 0)
-                    assert w_r >= 0, "the retiming is not legal."
-
-                    # take note of what is the minimum retimed incoming weight
-                    if w_r < min_in_w_r:
-                        min_in_w_r = w_r
-
-                # for each outcoming edge
-                for e in wrapper.g.out_edges(node):
-                    head_node = e[1]
-                    # calculate the temporary w of the retimed edge
-                    # for the retiming of the tail node: if it is not set, take 0
-                    w_r = wrapper.g.edges[e]["weight"] + r.get(head_node, 0)
-                    assert w_r >= 0, "the retiming is not legal."
-
-                    # take note of what is the minimum retimed incoming weight
-                    if w_r < min_out_w_r:
-                        min_out_w_r = w_r
-
-                # now we have lowerbound and upperbound for the random choice
-                r[int(node)] = randint(-min_in_w_r, min_out_w_r)
-
-            wrapper.set_retimed_graph(r)
-            found_retiming = True
-        except ValueError:
-            print("whoops.")
-            found_retiming = False
-
-    print("legal retiming found.")
-
-    _, cp = cp_delta_clock(wrapper.g)
-    wrapper.init_WD()
-
-    print(f'previous clock period: {cp}')
-    print(f'unique val of D: {len(np.unique(wrapper.D))}')
-    print(f'num of nodes: {len(g.nodes)}')
-    print(f'num of edges: {len(g.edges)}')
-
+    t_start_sort = time.time()
+    print(f"opt{algo_num}: sorting D...")
     d_elems_sorted = np.unique(wrapper.D)
+    t_sort = time.time() - t_start_sort
+    print(f"sorted D in {t_sort}")
 
-    # t0 = time.time()
-    # print(wrapper.opt1_initialized(d_elems_sorted))
-    t1 = time.time()
-    print(wrapper.opt2_initialized(d_elems_sorted))
-    t2 = time.time()
+    if algo_num == 1:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_bf(d_elems_sorted)
+        t1 = time.time()
+    elif algo_num == 2:
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_feas_optimized(d_elems_sorted)
+        t1 = time.time()
+    else:
+        # NEW WRAPPER
+        t0 = time.time()
+        cp1, _ = wrapper.binary_search_minimum_feas(d_elems_sorted)
+        t1 = time.time()
 
-    # print(f"opt1 initialized:{t1 - t0}")
-    print(f"opt2 initialized:{t2 - t1}")
-    return wrapper
 
+    t_opt = t1 - t0
+    if algo_num == 3:
+        print(f"opt2 NEW WRAP:{t1 - t0}")
+    else:
+        print(f"opt{algo_num}:{t1 - t0}")
 
+    print(f"total time: {t_wd+t_sort+t_opt}")
+
+    is_ok = cp1 == optimal_cp
+    assert is_ok, f"something went wrong.  optimal: {optimal_cp}" \
+                                          f"cp1: {cp1}"
+    print("tests ok")
+
+    filename = os.path.basename(path)
+    return filename, algo_num, n_nodes, n_edges, n_edges_zero, int(optimal_cp), n_unique_D, t_wd, t_opt, is_ok
 
 
 if __name__ == '__main__':
-    wrapper = test_initialized()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path')
+    parser.add_argument('--algo_num')
+    parser.add_argument('--write')
+    args = parser.parse_args()
+
+    row = get_row_from_tuple(test_get_stats(args.path, int(args.algo_num)))
+
+    if int(args.write) == 1:
+        with open('Test/stat_files/test.csv', 'a') as fd:
+            fd.write(row)

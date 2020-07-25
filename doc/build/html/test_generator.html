@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test generator &#8212; Retiming 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="NewGraphWrapper" href="NewGraphWrapper.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Test generator</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Test.test_generator">
+<span id="test-generator"></span><h1>Test generator<a class="headerlink" href="#module-Test.test_generator" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="Test.test_generator.generate_test">
+<code class="sig-prename descclassname">Test.test_generator.</code><code class="sig-name descname">generate_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/test_generator.html#generate_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Test.test_generator.generate_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate test graphs as dot files.</p>
+<p>It is composed in three phases:</p>
+<p>1. It first generates a backbone_graph, i.e. a cycle (N nodes and N edges). Then, it creates a
+<a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.binomial_graph.html#networkx.generators.random_graphs.binomial_graph">binomial graph</a>
+with a probability p, and merges the two. It is important that the graph has the cyclic backbone because it is required that every node is reachable from any other (for W and D).</p>
+<p>2. After the merge, given two upperbounds upW and upD, respectively for the edge weights and the node delays,
+it initialize every node with a random delay from 1 to upD, and every edge with a random weight from 1 to upW.
+It is <strong>crucial</strong> that the weights of the graph are always &gt;=1, because in this way it is known that the optimal CP
+is the max{d(v)}.</p>
+<p>3. Now, the graph is complete, but it is in its optimal form. To randomize the graph the random_retime function (see utils)
+is used. After that, the graph is saved as dot file.</p>
+<p>These steps are repeated for different ranges of N, p, up_w, up_d. In particular:</p>
+<p>N in [5, 10, 20, 50, 75, 100, 125, 150, 175, 200, 500]</p>
+<p>p in [.0, .05, .1, .2, .3, .5, .75, 1]</p>
+<p>up_w in [1, 5, 10, 100, 1000, 10000]</p>
+<p>up_d in [1, 5, 10, 100, 1000, 10000]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="NewGraphWrapper.html"
+                        title="previous chapter">NewGraphWrapper</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils.html"
+                        title="next chapter">Utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/test_generator.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Test generator</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+  </body>
+</html>

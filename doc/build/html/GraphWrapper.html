@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphWrapper &#8212; Retiming 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NewGraphWrapper" href="NewGraphWrapper.html" />
+    <link rel="prev" title="Welcome to Retiming’s documentation!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Retiming’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GraphWrapper</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Wrappers.GraphWrapper">
+<span id="graphwrapper"></span><h1>GraphWrapper<a class="headerlink" href="#module-Wrappers.GraphWrapper" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="Wrappers.GraphWrapper.CustomWeight">
+<em class="property">class </em><code class="sig-prename descclassname">Wrappers.GraphWrapper.</code><code class="sig-name descname">CustomWeight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#CustomWeight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.CustomWeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom weight class, needed for calculating W and D.</p>
+<p>It has two weights (x,y) and overloads the operator add with componentwise addition, and the
+operator less than with the lexicographic order.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="Wrappers.GraphWrapper.GraphWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">Wrappers.GraphWrapper.</code><code class="sig-name descname">GraphWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">g</span><span class="p">:</span> <span class="n">networkx.classes.digraph.DiGraph</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class that contains the nx.DiGraph graph. This class was used for OPT1 and OPT2,
+but a better version of OPT2 is contained in NewGraphWrapper.</p>
+<p>It contains -apart from the graph- the WD matrices (that need to be initialized with the appropriate method first).</p>
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.WD">
+<code class="sig-name descname">WD</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;built-in function array&gt;</em>, <em class="sig-param">&lt;built-in function array&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.WD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.WD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and returns W, D matrices as 2D numpy array.
+W and D are |V| x |V|.</p>
+<ol class="arabic">
+<li><p>Weight each edge u-e-&gt;_ in E with the ordered pair (w(e), -d(u))</p></li>
+<li><p>compute the all-pairs shortest paths with a custom Floyd Warshall such that add of the weights: componentwise addition, comparison of the weights: lexicographic order</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>(see CustomWeight class and floyd_warshall_predecessor_and_distance_custom in nx.algorithms.shortest_path.dense.py)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>For each u,v vertices, their shortest path weight is (x,y). Set W(u,v) = x, D(u,v) = d(v) - y</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>W, D</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf">
+<code class="sig-name descname">binary_search_minimum_bf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d_elems_sorted</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.binary_search_minimum_bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.binary_search_minimum_bf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the minimum clock period feasible given a set of possible clock periods sorted.</p>
+<p>Since the elements are sorted, it uses a binary search.</p>
+<p>It uses test_feasibility_bf to check whether a given cp is feasible or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d_elems_sorted</strong> – a list of possible (unique) clock periods sorted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the minimum feasible clock period and the corresponding retiming</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.init_WD">
+<code class="sig-name descname">init_WD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.init_WD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.init_WD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization of the two matrices W, D. It calls the function WD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.opt1">
+<code class="sig-name descname">opt1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.opt1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.opt1" title="Permalink to this definition">¶</a></dt>
+<dd><p>OPT-1 algorithm to find the best feasible clock period.</p>
+<ol class="arabic simple">
+<li><p>compute W, D with the WD algorithm</p></li>
+<li><p>sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)</p></li>
+<li><p>binary search in d the minimum feasible clock period with binary_search_minimum_bf</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>see binary_search_minimum_bf</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.set_retimed_graph">
+<code class="sig-name descname">set_retimed_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.set_retimed_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.set_retimed_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>applies the retiming r on the graph if it’s legal. Check done with check_legal_retimed_graph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> – the given retiming to set on the graph</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raise</dt>
+<dd class="field-odd"><p>ValueError if the retiming is illegal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf">
+<code class="sig-name descname">test_feasibility_bf</code><span class="sig-paren">(</span><em class="sig-param">c) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/GraphWrapper.html#GraphWrapper.test_feasibility_bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.GraphWrapper.GraphWrapper.test_feasibility_bf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bellman-Ford test for feasibility
+constraints:</p>
+<ol class="arabic simple">
+<li><p>r(u) - r(v) &lt;= w(e), for all e in E s.t. (u)-e-&gt;(v)</p></li>
+<li><p>r(u) - r(v) &lt;= W(u,v) - 1, for all u,v in V s.t. D(u,v) &gt; c</p></li>
+</ol>
+<p>The algorithm works in this way:</p>
+<ol class="arabic">
+<li><p>create constraint_graph, a copy of a graph with edges reversed</p></li>
+<li><p>find all u, v in V s.t. D(u,v) &gt; c</p></li>
+<li><p>for each u, v add an edge e to the constraint_graph s.t. (v)-e-&gt;(u)</p></li>
+<li><p>add a “dummy” node linked with weight 0 to every other node</p></li>
+<li><p>try to solve the LP problem with single_source_bellman_ford from “dummy”</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>if not solvable, throws NetworkXUnbounded exception</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>c</strong> – the clock period to test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>is_feasible: a boolean that says if c is feasible or not; r: if is_feasible, r is the retiming to get c</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Retiming’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="NewGraphWrapper.html"
+                        title="next chapter">NewGraphWrapper</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/GraphWrapper.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NewGraphWrapper.html" title="NewGraphWrapper"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Retiming’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Retiming 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GraphWrapper</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Nicolò Felicioni.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+  </body>
+</html>
