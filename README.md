@@ -111,6 +111,7 @@ The first was used for OPT1 and OPT2, but a better version of OPT2 is contained 
 * check_legal_retimed_graph: checks if the graph is legal after retiming, i.e. if all the w(e)>=0 (condition W1.).
 * set_retimed_graph: applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph.
 
+Other useful functions are in utils.py.
 For the details about OPT1 and OPT2, see the docs for GraphWrapper and NewGraphWrapper.
 
 
