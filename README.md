@@ -109,6 +109,8 @@ Check if a certain clock period c is feasible.
 3. Run CP algorithm on  G<sub>r</sub>. If cp( G<sub>r</sub>)>c, then c is not feasible. Otherwise c is feasible and r is the desired retiming.  
 ## Algorithms implementation
 
+Docs are already compiled in the *doc* directory. Open index.html for implementation details.
+
 ## Test creation
 
 ### Random retiming legal by construction
@@ -127,4 +129,3 @@ After activating the virtual environment, install python dependecies with the fo
 ```shell script
 pip install -r requirements.txt
 ```
-
