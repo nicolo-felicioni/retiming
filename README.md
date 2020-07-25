@@ -13,7 +13,7 @@ The goal is to decrease as much as possible the clock period of a synchronous ci
 where δ(x, y)=1 if x=y, and  δ(x, y)=0 otherwise (comparison function).
 The following figure shows a design of a simple correlator for k = 3.
 <p align="center">
-    <img width="10%" src="images/correlator.png" />
+    <img width="50%" src="images/correlator.png" />
 </p>
 Suppose that each adder has a propagation delay of 7 esec (a fictitious amount of time), and each comparator has a delay of 3 esec. Then the clock period must be at least 24 esec, i.e. the time for a signal to propagate from the register on the connection labeled A through one comparator and three adders. 
 Better performance can be reached by removing register on connection A and inserting a new register on connection B, as shown in the following figure.
