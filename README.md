@@ -138,7 +138,7 @@ To run the graph test generator:
 ```shell script
 python3 test_generator.py
 ```
-The rational of the creation of the tests is: by definition of the clock period, if we have a circuit with any edge e s.t. w(e)&ge;1, we know a priori that the optimal cp is max<sub>v</sub>d(v). After the creation of a random graph with this condition though, we want to randomise the graph in order to be difficult for OPT1/2 to find the retiming requested, therefore we exploit the retiming property that says that a retiming does not change the function of the circuit. Therefore we create a random retiming (and change the structure of the graph) in order to create the test graphs.
+The rationale of the creation of the tests is: by definition of the clock period, if we have a circuit with any edge e s.t. w(e)&ge;1, we know a priori that the optimal cp is max<sub>v</sub>d(v). After the creation of a random graph with this condition though, we want to randomise the graph in order to be difficult for OPT1/2 to find the retiming requested, therefore we exploit the retiming property that says that a retiming does not change the function of the circuit. Therefore we create a random retiming (and change the structure of the graph) in order to create the test graphs.
 ### Random retiming legal by construction
 This is done by the function in utils.py called random_retime. It finds, for each node, the lowerbound and the upperbound for the retiming of that node, and then  
 chooses a random integer between LB and UB.  
