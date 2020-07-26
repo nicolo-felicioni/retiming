@@ -8,7 +8,9 @@ The first part of the readme (until the section "Algorithms to be implemented" i
 ### Introduction
 The goal is to decrease as much as possible the clock period of a synchronous circuit by means of a technique called _retiming_, that does not increase latency. One example is the following of the digital correlator, taken from the original paper. The correlator takes a stream of bits x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ... as input and compares it with a fixed-length pattern          a<sub>0</sub>, a<sub>1</sub>, ... a<sub>k</sub>. After receiving each input x<sub>i</sub> (i &ge; k), the correlation produces as output the number of matches:
 
-<center> y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) , </center>
+<p align="center">
+     y<sub>i</sub> = Σ<sup>k</sup><sub>j=0</sub>  δ(x<sub>i − j</sub>, a<sub>j</sub>) ,
+</p>
 
 where δ(x, y)=1 if x=y, and  δ(x, y)=0 otherwise (comparison function).
 The following figure shows a design of a simple correlator for k = 3.
@@ -20,7 +22,7 @@ Better performance can be reached by removing register on connection A and inser
 <p align="center">
     <img width="50%" src="images/correlatormod.png" />
 </p>
-The clock period now is decreased by 7 exec. 
+The clock period now is decreased by 7 esec. 
 
 **Retiming** is the technique of inserting and deleting registers in such a way as to preserve function, and it can be used to produce faster circuits.
 
@@ -43,7 +45,9 @@ A simple path p is a path from a vertex to another that contains no vertex twice
 
 #### CP algorithm
 This is an algorithm that computes the clock period of a circuit. The clock period is defined as:
-<center>cp(G)=max{d(p) : w(p)=0} </center>
+<p align="center">
+    cp(G)=max{d(p) : w(p)=0}
+</p>
 
 **Algorithm CP:**
 1. Let G0 be the G subgraph with only those edges e with w(e)=0
