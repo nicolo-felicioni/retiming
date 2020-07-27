@@ -196,3 +196,33 @@ class NewGraphWrapper:
         r_final = r_mat.sum(axis=1)
 
         return is_feasible, r_final
+
+
+    def opt2(self):
+        """
+        OPT-2 algorithm to find the best feasible clock period.
+
+        #. compute W, D with the WD algorithm
+
+        #. sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)
+
+        #. binary search in d the minimum feasible clock period with FEAS (see binary_search_minimum_feas doc)
+
+        :return: see binary_search_minimum_bf
+        """
+        # 1. compute W, D with the WD algorithm
+        if self.W is None or self.D is None:
+            print("opt2 NEW WRAP: initializing W,D...")
+            self.init_WD()
+
+        # 2. sort the elements in the range of D
+        # the unique function also sorts the elements
+        t_start_sort = time.time()
+        print("opt2 NEW WRAP: sorting D...")
+        d_elems_sorted = np.unique(self.D)
+        print(f"sorted D in {time.time()-t_start_sort}")
+
+        # 3. binary search in d the minimum feasible clock period
+        # check with BF
+        return self.binary_search_minimum_feas(d_elems_sorted)
+
