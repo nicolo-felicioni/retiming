@@ -82,7 +82,7 @@ class GraphWrapper:
 
         #. compute the all-pairs shortest paths with a custom Floyd Warshall such that add of the weights: componentwise addition, comparison of the weights: lexicographic order
 
-            * (see CustomWeight class and floyd_warshall_predecessor_and_distance_custom in nx.algorithms.shortest_path.dense.py)
+            * (see CustomWeight class and floyd_warshall_predecessor_and_distance_custom in nx.algorithms.shortest_paths.dense.py)
 
         #. For each u,v vertices, their shortest path weight is (x,y). Set W(u,v) = x, D(u,v) = d(v) - y
 
