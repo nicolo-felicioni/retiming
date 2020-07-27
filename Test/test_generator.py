@@ -4,6 +4,9 @@ from random import randint
 from Wrappers.GraphWrapper import GraphWrapper
 from utils import random_retime
 
+def parse_float(p):
+    return str(p).replace('.', 'd')
+
 
 def generate_test():
     """
@@ -36,8 +39,8 @@ def generate_test():
     :return: None
     """
 
-    # for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
-    for N in tqdm([75, 125, 150, 175]):
+    for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
+    # for N in tqdm([75, 125, 150, 175]):
         for p in tqdm([.0, .05, .1, .2, .3, .5, .75, 1]):
             for up_w in [1, 5, 10, 100, 1000, 10000]:
                 for up_d in [1, 5, 10, 100, 1000, 10000]:
@@ -62,9 +65,78 @@ def generate_test():
 
                     # randomization of the graph
                     wrapper.set_retimed_graph(r)
+                    nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
 
-                    nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/N_{N}_p_{p}_upw_{up_w}_upd_{up_d}")
+                    nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
+
+
+def create_graph_2100_edge():
+    p_dict = {300: 0.0203, 400: 0.01085}
+
+    for N in tqdm(p_dict.keys()):
+    # for N in tqdm([75, 125, 150, 175]):
+        p = p_dict[N]
+        for up_w in [1, 5, 10, 100, 1000, 10000]:
+            for up_d in [1, 5, 10, 100, 1000, 10000]:
+                # generate a cyclic backbone
+                backbone_graph = nx.DiGraph()
+                for n in range(N):
+                    backbone_graph.add_edge(n, (n + 1) % N)
+
+                random_graph = nx.binomial_graph(n=N, p=p, seed=42, directed=True)
+
+                graph = nx.compose(backbone_graph, random_graph)
+
+                for edge in graph.edges:
+                    graph.edges[edge]["weight"] = randint(1, up_w)
+
+                for node in graph.nodes:
+                    graph.nodes[node]["delay"] = randint(1, up_d)
+
+                wrapper = GraphWrapper(graph)
+
+                r = random_retime(graph)
+
+                # randomization of the graph
+                wrapper.set_retimed_graph(r)
+                nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
+
+                nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/2100edges/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
+
+
+def create_graph_v_e():
+    p_dict = {300: 0.0, 400: 0.0}
+
+    for N in tqdm(p_dict.keys()):
+    # for N in tqdm([75, 125, 150, 175]):
+        p = 0.0
+        for up_w in [1, 5, 10, 100, 1000, 10000]:
+            for up_d in [1, 5, 10, 100, 1000, 10000]:
+                # generate a cyclic backbone
+                backbone_graph = nx.DiGraph()
+                for n in range(N):
+                    backbone_graph.add_edge(n, (n + 1) % N)
+
+                random_graph = nx.binomial_graph(n=N, p=p, seed=42, directed=True)
+
+                graph = nx.compose(backbone_graph, random_graph)
+
+                for edge in graph.edges:
+                    graph.edges[edge]["weight"] = randint(1, up_w)
+
+                for node in graph.nodes:
+                    graph.nodes[node]["delay"] = randint(1, up_d)
+
+                wrapper = GraphWrapper(graph)
+
+                r = random_retime(graph)
+
+                # randomization of the graph
+                wrapper.set_retimed_graph(r)
+                nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
+
+                nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/ve/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
 
 
 if __name__ == '__main__':
-    generate_test()
+    create_graph_v_e()

@@ -1,7 +1,11 @@
 #!/bin/sh
-for algo_num in {1..3}; do
+counter=0
+for algo_num in 1 3; do
+    echo 'algo_num is' $algo_num
     for path in selected_tests/*; do
-      python3 run_test.py --path $path --algo_num $algo_num --write 0
+      echo $counter
+      python3 run_test.py --path $path --algo_num $algo_num --write 1
+      counter=$((counter+1))
     done
 done
 
