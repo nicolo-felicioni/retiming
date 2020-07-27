@@ -206,9 +206,9 @@ class NewGraphWrapper:
 
         #. sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)
 
-        #. binary search in d the minimum feasible clock period with FEAS (see binary_search_minimum_feas doc)
+        #. binary search in d the minimum feasible clock period with FEAS
 
-        :return: see binary_search_minimum_bf
+        :return: see binary_search_minimum_feas
         """
         # 1. compute W, D with the WD algorithm
         if self.W is None or self.D is None:
@@ -223,6 +223,6 @@ class NewGraphWrapper:
         print(f"sorted D in {time.time()-t_start_sort}")
 
         # 3. binary search in d the minimum feasible clock period
-        # check with BF
+        # check with FEAS
         return self.binary_search_minimum_feas(d_elems_sorted)
 

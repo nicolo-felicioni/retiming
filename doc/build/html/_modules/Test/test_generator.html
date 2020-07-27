@@ -45,6 +45,9 @@
 <span class="kn">from</span> <span class="nn">Wrappers.GraphWrapper</span> <span class="kn">import</span> <span class="n">GraphWrapper</span>
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">random_retime</span>
 
+<span class="k">def</span> <span class="nf">parse_float</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="generate_test"><a class="viewcode-back" href="../../test_generator.html#Test.test_generator.generate_test">[docs]</a><span class="k">def</span> <span class="nf">generate_test</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -77,8 +80,8 @@
 <span class="sd">    :return: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># for N in tqdm([5, 10, 20, 50, 100, 200, 500]):</span>
-    <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">([</span><span class="mi">75</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">175</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">]):</span>
+    <span class="c1"># for N in tqdm([75, 125, 150, 175]):</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">([</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">75</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
             <span class="k">for</span> <span class="n">up_w</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">up_d</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
@@ -103,12 +106,81 @@
 
                     <span class="c1"># randomization of the graph</span>
                     <span class="n">wrapper</span><span class="o">.</span><span class="n">set_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">)</span>
 
-                    <span class="n">nx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">write_dot</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;../graph_files/N_</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">_p_</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_upw_</span><span class="si">{</span><span class="n">up_w</span><span class="si">}</span><span class="s2">_upd_</span><span class="si">{</span><span class="n">up_d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                    <span class="n">nx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">write_dot</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;../graph_files/N_</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">_p_</span><span class="si">{</span><span class="n">parse_float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">_upw_</span><span class="si">{</span><span class="n">up_w</span><span class="si">}</span><span class="s2">_upd_</span><span class="si">{</span><span class="n">up_d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">create_graph_2100_edge</span><span class="p">():</span>
+    <span class="n">p_dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">300</span><span class="p">:</span> <span class="mf">0.0203</span><span class="p">,</span> <span class="mi">400</span><span class="p">:</span> <span class="mf">0.01085</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">p_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="c1"># for N in tqdm([75, 125, 150, 175]):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p_dict</span><span class="p">[</span><span class="n">N</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">up_w</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">up_d</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
+                <span class="c1"># generate a cyclic backbone</span>
+                <span class="n">backbone_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                    <span class="n">backbone_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+
+                <span class="n">random_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">binomial_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">backbone_graph</span><span class="p">,</span> <span class="n">random_graph</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">up_w</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">up_d</span><span class="p">)</span>
+
+                <span class="n">wrapper</span> <span class="o">=</span> <span class="n">GraphWrapper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+                <span class="n">r</span> <span class="o">=</span> <span class="n">random_retime</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+                <span class="c1"># randomization of the graph</span>
+                <span class="n">wrapper</span><span class="o">.</span><span class="n">set_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">)</span>
+
+                <span class="n">nx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">write_dot</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;../graph_files/2100edges/N_</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">_p_</span><span class="si">{</span><span class="n">parse_float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">_upw_</span><span class="si">{</span><span class="n">up_w</span><span class="si">}</span><span class="s2">_upd_</span><span class="si">{</span><span class="n">up_d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">create_graph_v_e</span><span class="p">():</span>
+    <span class="n">p_dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">300</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">400</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">p_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="c1"># for N in tqdm([75, 125, 150, 175]):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">up_w</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">up_d</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]:</span>
+                <span class="c1"># generate a cyclic backbone</span>
+                <span class="n">backbone_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                    <span class="n">backbone_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+
+                <span class="n">random_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">binomial_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">backbone_graph</span><span class="p">,</span> <span class="n">random_graph</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">up_w</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">up_d</span><span class="p">)</span>
+
+                <span class="n">wrapper</span> <span class="o">=</span> <span class="n">GraphWrapper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+                <span class="n">r</span> <span class="o">=</span> <span class="n">random_retime</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+                <span class="c1"># randomization of the graph</span>
+                <span class="n">wrapper</span><span class="o">.</span><span class="n">set_retimed_graph</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">)</span>
+
+                <span class="n">nx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">write_dot</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;../graph_files/ve/N_</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">_p_</span><span class="si">{</span><span class="n">parse_float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">_upw_</span><span class="si">{</span><span class="n">up_w</span><span class="si">}</span><span class="s2">_upd_</span><span class="si">{</span><span class="n">up_d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">generate_test</span><span class="p">()</span>
+    <span class="n">create_graph_v_e</span><span class="p">()</span>
 </pre></div>
 
             <div class="clearer"></div>

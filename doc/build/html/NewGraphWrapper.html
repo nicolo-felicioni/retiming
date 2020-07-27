@@ -108,6 +108,22 @@ In this version, it works like this:</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="Wrappers.NewGraphWrapper.NewGraphWrapper.opt2">
+<code class="sig-name descname">opt2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Wrappers/NewGraphWrapper.html#NewGraphWrapper.opt2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Wrappers.NewGraphWrapper.NewGraphWrapper.opt2" title="Permalink to this definition">¶</a></dt>
+<dd><p>OPT-2 algorithm to find the best feasible clock period.</p>
+<ol class="arabic simple">
+<li><p>compute W, D with the WD algorithm</p></li>
+<li><p>sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)</p></li>
+<li><p>binary search in d the minimum feasible clock period with FEAS</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>see binary_search_minimum_feas</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>

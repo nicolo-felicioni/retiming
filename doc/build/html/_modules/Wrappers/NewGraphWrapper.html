@@ -236,7 +236,37 @@
         <span class="n">is_feasible</span> <span class="o">=</span> <span class="p">(</span><span class="n">cp</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">)</span>
         <span class="n">r_final</span> <span class="o">=</span> <span class="n">r_mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span></div></div>
+        <span class="k">return</span> <span class="n">is_feasible</span><span class="p">,</span> <span class="n">r_final</span></div>
+
+
+<div class="viewcode-block" id="NewGraphWrapper.opt2"><a class="viewcode-back" href="../../NewGraphWrapper.html#Wrappers.NewGraphWrapper.NewGraphWrapper.opt2">[docs]</a>    <span class="k">def</span> <span class="nf">opt2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        OPT-2 algorithm to find the best feasible clock period.</span>
+
+<span class="sd">        #. compute W, D with the WD algorithm</span>
+
+<span class="sd">        #. sort the elements in the range of D (these elements are contained in the np array d_elems_sorted)</span>
+
+<span class="sd">        #. binary search in d the minimum feasible clock period with FEAS</span>
+
+<span class="sd">        :return: see binary_search_minimum_feas</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. compute W, D with the WD algorithm</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2 NEW WRAP: initializing W,D...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_WD</span><span class="p">()</span>
+
+        <span class="c1"># 2. sort the elements in the range of D</span>
+        <span class="c1"># the unique function also sorts the elements</span>
+        <span class="n">t_start_sort</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opt2 NEW WRAP: sorting D...&quot;</span><span class="p">)</span>
+        <span class="n">d_elems_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sorted D in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t_start_sort</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. binary search in d the minimum feasible clock period</span>
+        <span class="c1"># check with FEAS</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_search_minimum_feas</span><span class="p">(</span><span class="n">d_elems_sorted</span><span class="p">)</span></div></div>
+
 </pre></div>
 
             <div class="clearer"></div>
