@@ -110,7 +110,7 @@ Check if a certain clock period c is feasible.
 ## Algorithms implementation
 
 Docs are already compiled in the *doc* directory. Open [doc/build/html/index.html](doc/build/html/index.html) in any browser for the documentation index.
-The implementation relies on the [NetworkX](https://networkx.github.io) library to build graphs, and uses the wrapper pattern to wrap the DiGraph object of NetworkX (for directed graph) within another object that implements the algorithm to be implemented and other auxiliary methods. The two main classes are GraphWrapper and NewGraphWrapper. 
+The implementation relies on the [NetworkX](https://networkx.github.io) library to build graphs, and uses the wrapper pattern to wrap the DiGraph object of NetworkX (for directed graph) within another object that implements the algorithm to be implemented and other auxiliary methods. The two main classes are GraphWrapper \([doc here](doc/build/html/GraphWrapper.html)\) and NewGraphWrapper \([doc here](doc/build/html/NewGraphWrapper.html)\). 
 The first was used for OPT1 and OPT2, but a better version of OPT2 is contained in NewGraphWrapper. Also, in GraphWrapper there are some auxiliary function useful to create random tests such that:
 * check_legal_retimed_graph: checks if the graph is legal after retiming, i.e. if all the w(e)>=0 (condition W1.).
 * set_retimed_graph: applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph.
