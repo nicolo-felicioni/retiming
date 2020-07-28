@@ -194,7 +194,7 @@ snakeviz path-to-the-file
 ```
 From those profile is clear the improvement of the NewGraphWrapper implementation of OPT2 (its profile is [here](profiles/N_200_p_0d75_upw_1000_upd_1000_algo3.profile)) from the GraphWrapper one (profiled [here](profiles/N_200_p_0d75_upw_1000_upd_1000_algo2.profile)).
 
-The time analyisis of the algorithms is in [Test/stat_files/test.csv](Test/stat_files/test.csv), a preview is reported below. Note that the field "algorithm" can have values 1, 2, 3. 1 means OPT1, 2 means OPT2 old implementation and 3 means OPT2 new implementation. In total, there are about 500 random tests in the csv and all the algorithms implemented passed them successfully.
+The time analyisis of the algorithms is in [Test/stat_files/test.csv](Test/stat_files/test.csv), a preview is reported below. Note that the field "algorithm" can have values 1, 2, 3. 1 means OPT1, 2 means OPT2 old implementation and 3 means OPT2 new implementation. In total, there are about 800 random tests in the csv and all the algorithms implemented passed them successfully.
 
 <p align="center">
   <a href="Test/stat_files/test.csv">
@@ -202,3 +202,14 @@ The time analyisis of the algorithms is in [Test/stat_files/test.csv](Test/stat_
   </a>
 </p>
 
+In order to assess the time complexity of OPT1 and OPT2, respectively O( |V|<sup>3</sup>lg(|V|) ) and O( |V| |E| lg(|V|) ), the two were compared in different scenarios, such as fixed number of nodes and varying number of edges, fixed number of edges and varying number of nodes, high and low number of edges. The results are shown in the plots below.
+
+<p float="center">
+  <img src="images/V100time.png" width="49%" />
+  <img src="images/e2100time.png" width="49.85%" /> 
+</p>
+
+<p float="center">
+  <img src="images/ve_time.png" width="49%" />
+  <img src="images/ev2time.png" width="49%" /> 
+</p>
