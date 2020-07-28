@@ -1,7 +1,7 @@
 # Retiming synchronous circuitry implementation
 
 This repository contains a Python 3 implementation of the paper [Retiming synchronous circuitry](https://people.eecs.berkeley.edu/~alanmi/courses/2008_290A/papers/leiserson_tech86.pdf) by Leiserson and Saxe.
-The first part of the readme (until the section "Algorithms to be implemented" included) is a summary of the original paper with an highlight to the theoretical details relevant to the implementation. The second part is about the actual implementation.
+The [first part](https://github.com/ciamir51/new-retiming#introduction) of the readme (until the section "Algorithms to be implemented" included) is a summary of the original paper with an highlight to the theoretical details relevant to the implementation. The [second part](https://github.com/ciamir51/new-retiming#algorithms-implementation) is about the actual implementation.
 
 ## The problem
 
