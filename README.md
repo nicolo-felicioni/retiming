@@ -202,7 +202,7 @@ The time analyisis of the algorithms is in [Test/stat_files/test.csv](Test/stat_
   </a>
 </p>
 
-In order to assess the time complexity of OPT1 and OPT2, respectively O( |V|<sup>3</sup>lg(|V|) ) and O( |V| |E| lg(|V|) ), the two were compared in different scenarios, such as fixed number of nodes and varying number of edges, fixed number of edges and varying number of nodes, high and low number of edges. The results are shown in the plots below.
+In order to assess the time complexity of OPT1 and OPT2, respectively O( |V|<sup>3</sup>lg(|V|) ) and O( |V| |E| lg(|V|) ), the two were compared in different scenarios, such as fixed number of nodes and varying number of edges, fixed number of edges and varying number of nodes, high and low number of edges. The results are shown in the plots below. The implementation of OPT2 is the one in NewWrapperGraph.
 
 <p float="center">
   <img src="images/V100time.png" width="49%" />
