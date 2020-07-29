@@ -132,7 +132,7 @@ After activating the virtual environment, install python dependecies with the fo
 pip install -r requirements.txt
 ```
 
-In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at <your-venv>/lib/<your-python-version>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
+In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at \<your-venv\>/lib/\<your-python-version\>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
 ```diff
 @@ -107,9 +107,11 @@
      # dictionary-of-dictionaries representation for dist and pred
