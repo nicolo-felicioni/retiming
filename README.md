@@ -131,6 +131,27 @@ After activating the virtual environment, install python dependecies with the fo
 ```shell script
 pip install -r requirements.txt
 ```
+
+In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at <your-venv>/lib/<your-python-version>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
+```diff
+@@ -107,9 +107,11 @@
+     # dictionary-of-dictionaries representation for dist and pred
+     # use some defaultdict magick here
+     # for dist the default is the floating point inf value
+-    dist = defaultdict(lambda: defaultdict(lambda: float('inf')))
++    from Wrappers.GraphWrapper import CustomWeight
++
++    dist = defaultdict(lambda: defaultdict(lambda: CustomWeight(float('inf'), float('inf'))))
+     for u in G:
+-        dist[u][u] = 0
++        dist[u][u] = CustomWeight(0, 0)
+     pred = defaultdict(dict)
+     # initialize path distance dictionary to be the adjacency matrix
+     # also set the distance to self to 0 (zero diagonal)
+```
+
+This is needed to adapt the Floyd-Warshall algorithm for all pairs shortest paths to the case of two-dimensional weights, and it is needed to run the WD algorithm.
+
 ## Test creation
 
 Graph to be tested generated random with the file test_generator.py (see the docs for details).
