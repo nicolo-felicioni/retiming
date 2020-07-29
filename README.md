@@ -234,3 +234,16 @@ In order to assess the time complexity of OPT1 and OPT2, respectively O( |V|<sup
   <img src="images/ve_time.png" width="49%" />
   <img src="images/ev2time.png" width="49%" /> 
 </p>
+
+Also memory consumption was analysed. The plots are shown below. We can see that the memory complexity for the two algorithms is similar, except in the scenario where |V|=|E|, in which OPT1 consumes more memory.
+
+<p float="center">
+  <img src="images/memv100.png" width="49%" />
+  <img src="images/memoryev2.png" width="49.85%" /> 
+</p>
+
+<p align="center">
+  <img align="center" src="images/memoryve.png" width="49%" />
+</p>
+
+
