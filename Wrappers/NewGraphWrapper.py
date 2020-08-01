@@ -136,7 +136,7 @@ class NewGraphWrapper:
         :param c: the clock period to be tested
         :return: is_feasible: a boolean that says if c is a feasible clock period; r_final: the final retiming
         """
-        r_mat = np.zeros(shape=(self.num_nodes, self.num_nodes-1))
+        r_mat = np.zeros(shape=(self.num_nodes, self.num_nodes-1), dtype=np.int)
         edges_zero = set([edge for edge in self.edges if self.weight[edge] == 0])
         weight = self.weight.copy()
 
@@ -226,3 +226,29 @@ class NewGraphWrapper:
         # check with FEAS
         return self.binary_search_minimum_feas(d_elems_sorted)
 
+    # retime the global graph g following function r
+    def get_retimed_graph(self, r):
+        #g_r = self.g.copy()
+        elist = []
+        # for each (u)-e->(v):
+        # wr(e) = w(e) + r(v) - r(u)
+        for (u, v) in self.g.edges:
+            elist.append((u, v, self.g.edges[u, v]["weight"] + r[v] - r[u]))
+
+        g_r = nx.DiGraph()
+        g_r.add_weighted_edges_from(elist)
+        return g_r
+
+    # applies the retiming r on the graph if it's legal
+    def set_retimed_graph(self, r: dict):
+        """
+        applies the retiming r on the graph if it's legal. Check done with check_legal_retimed_graph
+
+        :param r: the given retiming to set on the graph
+        :return: None
+        :raise: ValueError if the retiming is illegal
+        """
+        g_r = self.get_retimed_graph(r)
+        if not check_legal_retimed_graph(g_r):
+            raise ValueError("The retiming is not legal.")
+        self.g = g_r

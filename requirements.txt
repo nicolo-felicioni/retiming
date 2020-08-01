@@ -43,3 +43,5 @@ tqdm==4.48.0
 urllib3==1.25.10
 wcwidth==0.2.5
 zipp==3.1.0
+graphviz==0.14.1
+pygraphviz==1.5
