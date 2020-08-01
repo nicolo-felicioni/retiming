@@ -132,7 +132,7 @@ After activating the virtual environment, install python dependecies with the fo
 pip install -r requirements.txt
 ```
 
-In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at <your-venv>/lib/<your-python-version>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
+In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at \<your-venv\>/lib/\<your-python-version\>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
 ```diff
 @@ -107,9 +107,11 @@
      # dictionary-of-dictionaries representation for dist and pred
@@ -234,3 +234,16 @@ In order to assess the time complexity of OPT1 and OPT2, respectively O( |V|<sup
   <img src="images/ve_time.png" width="49%" />
   <img src="images/ev2time.png" width="49%" /> 
 </p>
+
+Also memory consumption was analysed. The plots are shown below. We can see that the memory complexity for the two algorithms is similar, except in the scenario where |V|=|E|, in which OPT1 consumes more memory.
+
+<p float="center">
+  <img src="images/memv100.png" width="49%" />
+  <img src="images/memoryev2.png" width="49.85%" /> 
+</p>
+
+<p align="center">
+  <img align="center" src="images/memoryve.png" width="49%" />
+</p>
+
+
