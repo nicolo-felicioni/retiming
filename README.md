@@ -132,6 +132,17 @@ After activating the virtual environment, install python dependecies with the fo
 pip install -r requirements.txt
 ```
 
+**Issue on MacOS:** On MacOS it may be needed to install graphviz with  
+```shell script
+brew install graphviz
+```
+and then install pygraphviz with 
+
+```shell script
+pip install --install-option="--include-path=/usr/local/include/" --install-option="--library-path=/usr/local/lib/" pygraphviz
+```
+
+
 In addition to this, it is necessary to make a modification to the file of the NetworkX library, which can be found at \<your-venv\>/lib/\<your-python-version\>/site-packages/networkx/algorithms/shortest_paths/dense.py (if you used a Python virtual environment). The file modification (within the function floyd_warshall_predecessor_and_distance) is shown below:
 ```diff
 @@ -107,9 +107,11 @@
@@ -152,6 +163,30 @@ In addition to this, it is necessary to make a modification to the file of the N
 
 This is needed to adapt the Floyd-Warshall algorithm for all pairs shortest paths to the case of two-dimensional weights, and it is needed to run the WD algorithm.
 
+## Run the algorithm on custom graphs
+
+In order to run the algorithms on custom graphs, there is the following script:
+
+```shell script
+
+python3 run_opt.py [-h] --input INPUT --opt OPT [--output OUTPUT] [--print_WD]
+                  [--draw_retimed_graph [DRAW_RETIMED_GRAPH]]
+
+```
+This script provides also a visualization of the graph, as well as the possibility of writing into a dot file the retimed graph returned by the algorithm selected.
+
+These are the arguments of the script:
+
+| Argument  | Description |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| -h, --help                                                                | show the help message and exit  |
+|  --input INPUT, -i INPUT                                                  | Path of the .dot file of the input graph. **REQUIRED** |
+|  --opt OPT, -opt OPT                                                      | Algorithm to use. Can be 1 (OPT1) or 2 (OPT2). **REQUIRED** |
+|  --output OUTPUT, -o OUTPUT                                               | Path for storing the retimed graph |
+|  --print_WD, -wd                                                          | Option to print the matrices W and D. |
+|   --draw_retimed_graph [DRAW_RETIMED_GRAPH], -draw [DRAW_RETIMED_GRAPH]   |  Option for drawing the retimed graph. Without arguments, it draws both the node ids and delays. You can specify the argument "ids" if you want only node ids printed, or "delays" if you want only component                                                                           delays printed. |
+
+                
 ## Test creation
 
 Graph to be tested generated random with the file test_generator.py (see the docs for details).
