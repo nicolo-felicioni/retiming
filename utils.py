@@ -249,7 +249,6 @@ def read_graph_dot_misc_l(path):
 
 def read_graph_dot(path):
     g = nx.DiGraph(nx.nx_agraph.read_dot(path))
-    print(g.nodes)
 
     # convert node labels to int
     mapping = {}

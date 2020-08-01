@@ -90,15 +90,18 @@ def main(input, opt, draw_retimed_graph, output, print_WD,
     print(f"OPT{opt} found this clock period: {cp1}")
     print(f"total time: {t_wd+t_opt}")
 
+    # if it is needed to save the retimed graph
     if draw_retimed_graph or output:
+        # take the original ids
         original_ids = nx.get_node_attributes(wrapper.g, 'original_ids')
 
+        # set the retiming and the delay attribute
         wrapper.set_retimed_graph(r)
         nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
         nx.set_node_attributes(wrapper.g, original_ids, 'original_ids')
 
         for v in wrapper.g.nodes:
-            wrapper.g.nodes[v]['label'] = f'{wrapper.g.nodes[v]["original_ids"]};{wrapper.g.nodes[v]["delay"]}'
+            wrapper.g.nodes[v]['label'] = f'{wrapper.g.nodes[v]["original_ids"]},{wrapper.g.nodes[v]["delay"]}'
             for e in wrapper.g.edges:
                 wrapper.g.edges[e]['label'] = wrapper.g.edges[e]['weight']
 
