@@ -3,6 +3,7 @@ import networkx as nx
 from random import randint
 from Wrappers.GraphWrapper import GraphWrapper
 from utils import random_retime
+import os
 
 def parse_float(p):
     return str(p).replace('.', 'd')
@@ -39,6 +40,11 @@ def generate_test():
     :return: None
     """
 
+    # if the folder does not exists, create one
+    folder = 'graph_files'
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
     for N in tqdm([5, 10, 20, 50, 100, 200, 500]):
     # for N in tqdm([75, 125, 150, 175]):
         for p in tqdm([.0, .05, .1, .2, .3, .5, .75, 1]):
@@ -67,7 +73,7 @@ def generate_test():
                     wrapper.set_retimed_graph(r)
                     nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
 
-                    nx.nx_pydot.write_dot(wrapper.g, f"../graph_files/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
+                    nx.nx_pydot.write_dot(wrapper.g, f"{folder}/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
 
 
 def create_graph_2100_edge():
