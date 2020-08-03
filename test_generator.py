@@ -73,7 +73,7 @@ def generate_test():
                     wrapper.set_retimed_graph(r)
                     nx.set_node_attributes(wrapper.g, wrapper.delay, 'delay')
 
-                    nx.nx_pydot.write_dot(wrapper.g, f"{folder}/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}")
+                    nx.nx_pydot.write_dot(wrapper.g, f"{folder}/N_{N}_p_{parse_float(p)}_upw_{up_w}_upd_{up_d}.dot")
 
 
 def create_graph_2100_edge():
